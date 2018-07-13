@@ -5,7 +5,9 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<name>openConfig</name>
 	<description>eAnOPEN background system project</description>
-	
+
+	<packaging>war</packaging>
+
 	<parent>  
 		<groupId>org.springframework.boot</groupId>  
 		<artifactId>spring-boot-starter-parent</artifactId>  
@@ -24,7 +26,16 @@
 		<dependency>  
 			<groupId>org.springframework.boot</groupId>  
 			<artifactId>spring-boot-starter-web</artifactId>
-		</dependency>  
+		</dependency>
+
+
+		<!-- 使用外部 Servlet容器 -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-tomcat</artifactId>
+			<scope>provided</scope>
+		</dependency>
+
 		<dependency>  
 			<groupId>org.springframework.boot</groupId>  
 			<artifactId>spring-boot-starter</artifactId>
@@ -141,11 +152,32 @@
 		</dependency>
 		<!-- 文件上传 end -->
 
-
+		<!-- 配置文件元数据绑定 -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-configuration-processor</artifactId>
+			<optional>true</optional>
+		</dependency>
 
 	</dependencies> 
 	
 	<build>
+		<resources>
+			<resource>
+				<directory>src/main/java</directory>
+				<includes>
+					<include>**/*</include>
+				</includes>
+				<filtering>false</filtering>
+			</resource>
+			<resource>
+				<directory>src/main/resources</directory>
+				<includes>
+					<include>**/*</include>
+				</includes>
+				<filtering>false</filtering>
+			</resource>
+		</resources>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>

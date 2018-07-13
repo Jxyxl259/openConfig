@@ -9,7 +9,15 @@ server:
     min-spare-threads: 10
   connection-timeout: 5000
 
-  
+fileUploadConfig:
+  windows-file-upload-path: "D://fileUpload//img//"
+  linux-file-upload-path: "/fileUpLoad/img/"
+  product-image-file: "product_img"
+  partner-image-file: "partner_img"
+
+
+
+
 spring:
   profiles:
     active: dev
@@ -32,6 +40,7 @@ spring:
   jackson:  
     time-zone: GMT+8
     date-format: yyyy-MM-dd HH:mm:ss
+
     
 #监控范围
 #      aop-patterns: com.yaic.auth.*

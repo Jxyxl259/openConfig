@@ -11,6 +11,13 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 public class MySpringMvcConfiguration extends WebMvcConfigurerAdapter {
 
 
+//	@Override
+//	public void addViewControllers(ViewControllerRegistry registry) {
+//		registry.addViewController("/").setViewName("index");
+//		registry.addViewController("/index").setViewName("index");
+//		registry.addViewController("/").setViewName("index");
+//	}
+
 	@Bean
 	@ConditionalOnClass(FileUpload.class)
 	public CommonsMultipartResolver commonsMultipartResolver(){

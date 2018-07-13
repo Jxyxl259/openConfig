@@ -146,7 +146,7 @@
 
     <!--开发环境:打印控制台-->
     <springProfile name="dev">
-        <logger name="com.yaic.eAnOPENbg" level="debug"/>
+        <logger name="com.yaic" level="debug"/>
     </springProfile>
 
     <root level="debug">

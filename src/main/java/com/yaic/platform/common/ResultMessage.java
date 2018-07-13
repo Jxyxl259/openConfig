@@ -53,6 +53,7 @@ public class ResultMessage<T> implements Serializable {
 		this.dataList = dataList;
 	}
 
+
 	public ResultMessage(GlobalMessageEnum messageEnum){
 		this.setResultCode(messageEnum.getResultCode()+"");
 		this.setResultMsg(messageEnum.getResultMsg());
@@ -158,7 +159,8 @@ public class ResultMessage<T> implements Serializable {
 		this.setResultMsg(messageEnum.getResultMsg());
 		return this;
 	}
-	
+
+
 	
 
 //	/** 此构造方法应用于data为null的场景 */

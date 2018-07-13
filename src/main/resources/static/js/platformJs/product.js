@@ -316,7 +316,7 @@ var commonObj = {
                 // 产品展示缩略图
                 this.api().column(3).nodes().each(function(cell, i){
                     var imgUrl = cell.textContent;
-                    cell.innerHTML = '<img src="../..'+ imgUrl +'" style="width: 60px;height: 60px"/>';
+                    cell.innerHTML = '<img src="../../..'+ imgUrl +'" style="width: 60px;height: 60px"/>';
                 });
                 // 产品展示页HTML代码
                 this.api().column(4).nodes().each(function(cell, i){
@@ -477,7 +477,7 @@ var PartnerCommon = function(){
                 area: ['700px', '550px'],
                 fixed: false, //不固定
                 maxmin: true,
-                content: './product_add_form.html'
+                content: './fragement/product_add_form.html'
             });
         },
 

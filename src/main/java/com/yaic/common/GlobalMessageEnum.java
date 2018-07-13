@@ -5,7 +5,15 @@ public enum GlobalMessageEnum {
 	SUCCESS(0,"操作成功"),
 	FAILED(1,"操作失败"),
 	PARAM_IS_NULL(2,"请求参数为空"),
-	PARAM_ILLEGAL(3,"参数不合法");
+	PARAM_ILLEGAL(3,"参数不合法"),
+
+
+
+
+	// 文件上传
+	FILE_TYPE_UNKNOW(7000,"文件类型未知"),
+	FILE_TYPE_UNACCEPT(7001,"不支持的图片类型");
+
 
 	private Integer resultCode;
 

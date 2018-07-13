@@ -1,11 +1,17 @@
 package com.yaic.platform.common;
 
+import com.yaic.common.GlobalMessageEnum;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.yaic.common.GlobalMessageEnum.FILE_TYPE_UNACCEPT;
+import static com.yaic.common.GlobalMessageEnum.FILE_TYPE_UNKNOW;
+import static com.yaic.platform.common.BaseController.getResults;
 
 public class PublicMethods {
 	
@@ -71,5 +77,45 @@ public class PublicMethods {
 		}
 		return ids;
 	}
+
+
+	/**
+	 * 校验上传文件基本信息
+	 * @param imageFile 上传源文件
+	 * @return 如果校验不通过，baseInfo中直接包含返回给前端的结果
+	 */
+	public static BaseInfo checkUpLoadImg(MultipartFile imageFile){
+
+		BaseInfo info = new BaseInfo(true, "");
+
+		if(imageFile == null){
+			// 上传文件为空
+			ResultMessage result = new ResultMessage(GlobalMessageEnum.PARAM_IS_NULL.getResultCode()+"","No Picture!!!");
+			info.setResult(result);
+			info.setSuccess(false);
+			return info;
+		}
+
+		String fileContentType = imageFile.getContentType();
+
+		if(fileContentType == null){
+			// 文件媒体类型为空
+			ResultMessage result = new ResultMessage(FILE_TYPE_UNKNOW);
+			info.setResult(result);
+			info.setSuccess(false);
+
+		}else{
+			if(!(fileContentType.contains("image/jpeg") ||fileContentType.contains("image/png"))){
+				// 返回错误提示"仅支持.jpg .png格式的图片文件"
+				ResultMessage result = new ResultMessage(FILE_TYPE_UNKNOW);
+				info.setResult(result);
+				info.setSuccess(false);
+
+			}
+		}
+		return info;
+	}
+
+
 
 }
