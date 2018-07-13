@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yaic.platform.product_module.dao.ProductDao" >
+  <resultMap id="BaseResultMap" type="com.yaic.platform.product_module.entity.Product" >
+    <constructor >
+      <idArg column="product_id" jdbcType="INTEGER" javaType="java.lang.Integer" />
+      <arg column="product_name" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="product_img" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="product_invalid" jdbcType="CHAR" javaType="java.lang.String" />
+      <arg column="product_remark" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="product_div_html" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="product_filed_aa" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="created_date" jdbcType="TIMESTAMP" javaType="java.util.Date" />
+      <arg column="created_user" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="update_date" jdbcType="TIMESTAMP" javaType="java.util.Date" />
+      <arg column="updated_user" jdbcType="VARCHAR" javaType="java.lang.String" />
+    </constructor>
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.yaic.platform.product_module.entity.Product" >
+    <constructor >
+      <idArg column="product_id" jdbcType="INTEGER" javaType="java.lang.Integer" />
+      <arg column="product_name" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="product_img" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="product_invalid" jdbcType="CHAR" javaType="java.lang.String" />
+      <arg column="product_remark" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="product_div_html" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="product_filed_aa" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="created_date" jdbcType="TIMESTAMP" javaType="java.util.Date" />
+      <arg column="created_user" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="update_date" jdbcType="TIMESTAMP" javaType="java.util.Date" />
+      <arg column="updated_user" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="product_txt" jdbcType="LONGVARCHAR" javaType="java.lang.String" />
+    </constructor>
+  </resultMap>
+
+
+  <sql id="Base_Column_List" >
+    product_id, product_name, product_img, product_invalid, product_remark, product_div_html, 
+    product_filed_aa, created_date, created_user, update_date, updated_user
+  </sql>
+
+
+  <sql id="Blob_Column_List" >
+    product_txt
+  </sql>
+
+
+  <select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from t_platform_product
+    where product_id = #{productId,jdbcType=INTEGER}
+  </select>
+
+
+  <select id="selectList" parameterType="com.yaic.platform.product_module.entity.Product" resultMap="BaseResultMap">
+      select
+      <include refid="Base_Column_List"/>
+      from t_platform_product
+      <trim prefix="where" prefixOverrides="AND|OR">
+        <if test="productName != null and productName != ''" >
+          and product_name like concat( #{productName,jdbcType=VARCHAR} , '%')
+        </if>
+        <if test="createdUser != null and createdUser != ''" >
+          and created_user = #{createdUser,jdbcType=VARCHAR}
+        </if>
+        <if test="productInvalid != null and productInvalid !=''" >
+          and product_invalid = #{productInvalid,jdbcType=CHAR}
+        </if>
+      </trim>
+      order by created_date desc
+  </select>
+
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_platform_product
+    where product_id = #{productId,jdbcType=INTEGER}
+  </delete>
+
+
+  <delete id="deleteByIds" parameterType="java.util.List">
+    delete from t_platform_product
+    where product_id in
+    <foreach collection="array" item="id" open="(" close=")" separator=",">
+      #{id,jdbcType=INTEGER}
+    </foreach>
+  </delete>
+
+  <insert id="insert" parameterType="com.yaic.platform.product_module.entity.Product" >
+    insert into t_platform_product (product_id, product_name, product_img, 
+      product_invalid, product_remark, product_div_html, 
+      product_filed_aa, created_date, created_user, 
+      update_date, updated_user, product_txt
+      )
+    values (#{productId,jdbcType=INTEGER}, #{productName,jdbcType=VARCHAR}, #{productImg,jdbcType=VARCHAR}, 
+      #{productInvalid,jdbcType=CHAR}, #{productRemark,jdbcType=VARCHAR}, #{productDivHtml,jdbcType=VARCHAR}, 
+      #{productFiledAa,jdbcType=VARCHAR}, #{createdDate,jdbcType=TIMESTAMP}, #{createdUser,jdbcType=VARCHAR}, 
+      #{updateDate,jdbcType=TIMESTAMP}, #{updatedUser,jdbcType=VARCHAR}, #{productTxt,jdbcType=LONGVARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.yaic.platform.product_module.entity.Product" >
+    insert into t_platform_product
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="productId != null" >
+        product_id,
+      </if>
+      <if test="productName != null" >
+        product_name,
+      </if>
+      <if test="productImg != null" >
+        product_img,
+      </if>
+      <if test="productInvalid != null" >
+        product_invalid,
+      </if>
+      <if test="productRemark != null" >
+        product_remark,
+      </if>
+      <if test="productDivHtml != null" >
+        product_div_html,
+      </if>
+      <if test="productFiledAa != null" >
+        product_filed_aa,
+      </if>
+      <if test="createdDate != null" >
+        created_date,
+      </if>
+      <if test="createdUser != null" >
+        created_user,
+      </if>
+      <if test="updateDate != null" >
+        update_date,
+      </if>
+      <if test="updatedUser != null" >
+        updated_user,
+      </if>
+      <if test="productTxt != null" >
+        product_txt,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="productId != null" >
+        #{productId,jdbcType=INTEGER},
+      </if>
+      <if test="productName != null" >
+        #{productName,jdbcType=VARCHAR},
+      </if>
+      <if test="productImg != null" >
+        #{productImg,jdbcType=VARCHAR},
+      </if>
+      <if test="productInvalid != null" >
+        #{productInvalid,jdbcType=CHAR},
+      </if>
+      <if test="productRemark != null" >
+        #{productRemark,jdbcType=VARCHAR},
+      </if>
+      <if test="productDivHtml != null" >
+        #{productDivHtml,jdbcType=VARCHAR},
+      </if>
+      <if test="productFiledAa != null" >
+        #{productFiledAa,jdbcType=VARCHAR},
+      </if>
+      <if test="createdDate != null" >
+        #{createdDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createdUser != null" >
+        #{createdUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateDate != null" >
+        #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatedUser != null" >
+        #{updatedUser,jdbcType=VARCHAR},
+      </if>
+      <if test="productTxt != null" >
+        #{productTxt,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+
+
+  <update id="updateByPrimaryKeySelective" parameterType="com.yaic.platform.product_module.entity.ProductModifyDto" >
+    update t_platform_product
+    <set >
+      <if test="productName != null" >
+        product_name = #{productName,jdbcType=VARCHAR},
+      </if>
+      <if test="productImg != null" >
+        product_img = #{productImg,jdbcType=VARCHAR},
+      </if>
+      <if test="productInvalid != null" >
+        product_invalid = #{productInvalid,jdbcType=CHAR},
+      </if>
+      <if test="productRemark != null" >
+        product_remark = #{productRemark,jdbcType=VARCHAR},
+      </if>
+      <if test="productDivHtml != null" >
+        product_div_html = #{productDivHtml,jdbcType=VARCHAR},
+      </if>
+      <if test="productFiledAa != null" >
+        product_filed_aa = #{productFiledAa,jdbcType=VARCHAR},
+      </if>
+      <if test="createdDate != null" >
+        created_date = #{createdDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createdUser != null" >
+        created_user = #{createdUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateDate != null" >
+        update_date = #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatedUser != null" >
+        updated_user = #{updatedUser,jdbcType=VARCHAR},
+      </if>
+      <if test="productTxt != null" >
+        product_txt = #{productTxt,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where product_id = #{productId,jdbcType=INTEGER}
+  </update>
+
+
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.yaic.platform.product_module.entity.Product" >
+    update t_platform_product
+    set product_name = #{productName,jdbcType=VARCHAR},
+      product_img = #{productImg,jdbcType=VARCHAR},
+      product_invalid = #{productInvalid,jdbcType=CHAR},
+      product_remark = #{productRemark,jdbcType=VARCHAR},
+      product_div_html = #{productDivHtml,jdbcType=VARCHAR},
+      product_filed_aa = #{productFiledAa,jdbcType=VARCHAR},
+      created_date = #{createdDate,jdbcType=TIMESTAMP},
+      created_user = #{createdUser,jdbcType=VARCHAR},
+      update_date = #{updateDate,jdbcType=TIMESTAMP},
+      updated_user = #{updatedUser,jdbcType=VARCHAR},
+      product_txt = #{productTxt,jdbcType=LONGVARCHAR}
+    where product_id = #{productId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.yaic.platform.product_module.entity.Product" >
+    update t_platform_product
+    set product_name = #{productName,jdbcType=VARCHAR},
+      product_img = #{productImg,jdbcType=VARCHAR},
+      product_invalid = #{productInvalid,jdbcType=CHAR},
+      product_remark = #{productRemark,jdbcType=VARCHAR},
+      product_div_html = #{productDivHtml,jdbcType=VARCHAR},
+      product_filed_aa = #{productFiledAa,jdbcType=VARCHAR},
+      created_date = #{createdDate,jdbcType=TIMESTAMP},
+      created_user = #{createdUser,jdbcType=VARCHAR},
+      update_date = #{updateDate,jdbcType=TIMESTAMP},
+      updated_user = #{updatedUser,jdbcType=VARCHAR}
+    where product_id = #{productId,jdbcType=INTEGER}
+  </update>
+</mapper>

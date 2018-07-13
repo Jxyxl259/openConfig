@@ -1,0 +1,77 @@
+﻿<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+    <link rel="stylesheet" type="text/css" href="../../../static/h-ui/css/H-ui.min.css"/>
+    <link rel="stylesheet" type="text/css" href="../../../static/h-ui.admin/css/H-ui.admin.css"/>
+    <link rel="stylesheet" type="text/css" href="../../../lib/Hui-iconfont/1.0.8/iconfont.css"/>
+    <link rel="stylesheet" type="text/css" href="../../../static/h-ui.admin/skin/default/skin.css" id="skin"/>
+    <link rel="stylesheet" type="text/css" href="../../../static/h-ui.admin/css/style.css"/>
+    <link rel="stylesheet" type="text/css" href="../../../css/index.css"/>
+    <title>产品管理</title>
+</head>
+<body>
+<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 平台管理 <span
+        class="c-gray en">&gt;</span> 产品管理
+</nav>
+<div class="page-container">
+    <div class="box-flex pd-5 bg-1 bk-gray">
+        <div class="page_user_top ">产品名称：<input id="productName" type="text" class="input-text input_userName"
+                                                placeholder="请输入产品名称..."/></div>
+        <div class="page_user_top text-c">创建人：<input id="createdUser" type="text" class="input-text input_userName"
+                                                     placeholder="创建人..."/></div>
+        <div class="page_user_top text-c">有效：<input id="validStatus" type="text" class="input-text input_userName"
+                                                    placeholder="1:有效 0:无效"/></div>
+        <div class="page_user_top text-c">
+            <button name="" id="selectInfo" class="btn btn-primary " type="submit"><i class="Hui-iconfont">&#xe665;</i>
+                查询
+            </button>
+            <a class="btn btn-primary" href="javascript:location.replace(location.href);" title="刷新"><i
+                    class="Hui-iconfont">&#xe68f;</i>重置</a>
+        </div>
+    </div>
+    <div id="pageSizeOptionContainer" class="l">
+        <p>每页要显示的条目数
+            <select id="pageSizeOption" onchange="updatePageSize(this)">
+                <option value="10">10</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+                <option value="200">200</option>
+                <option value="0">全部</option>
+            </select>
+        </p>
+        <input id="pageSizeVal" type="hidden" value="10"/>
+    </div>
+    <div class="btn_out r">
+        <a id="deleteRow" href="javascript:;" class="btn btn-primary"><i class="Hui-iconfont">&#xe6e2;</i> 批量删除</a>
+        <a id="addRow" class="btn btn-primary" href="javascript:;"><i class="Hui-iconfont">&#xe600;</i> 新建产品展示</a>
+        <a id="modifyRow" class="btn btn-primary" href="javascript:;"><i class="Hui-iconfont">&#xe6df;</i> 修改产品展示</a>
+    </div>
+    <div class="mt-20 table_box">
+        <table id="tableId"
+               class="table table-border table-bordered table-bg table-hover table-sort table-responsive"></table>
+    </div>
+    <div id="pagenationContainer">
+    </div>
+    <input id="currentPageNo" type="hidden" value="1"/>
+</div>
+<!--_footer 作为公共模版分离出去-->
+<script type="text/javascript" src="../../../lib/jquery/1.9.1/jquery.min.js"></script>
+<script type="text/javascript" src="../../../lib/layer/2.4/layer.js"></script>
+<script type="text/javascript" src="../../../js/menu.js"></script>
+<script type="text/javascript" src="../../../static/yafa-restful-client.js"></script>
+<script type="text/javascript" src="../../../static/h-ui/js/H-ui.min.js"></script>
+<script type="text/javascript" src="../../../static/h-ui.admin/js/H-ui.admin.js"></script> <!--/_footer 作为公共模版分离出去-->
+
+<!--请在下方写此页面业务相关的脚本-->
+<script type="text/javascript" src="../../../lib/My97DatePicker/4.8/WdatePicker.js"></script>
+<script type="text/javascript" src="../../../lib/datatables/1.10.0/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="../../../lib/laypage/1.2/laypage.js"></script>
+<script type="text/javascript" src="../../../js/platformJs/product.js"></script>
+</body>
+</html>

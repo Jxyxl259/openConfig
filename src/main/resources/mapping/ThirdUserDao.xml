@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yaic.platform.user_module.dao.ThirdUserDao" >
+  <resultMap id="BaseResultMap" type="com.yaic.platform.user_module.entity.ThirdUser" >
+    <constructor >
+      <idArg column="account_id" jdbcType="INTEGER" javaType="java.lang.Integer" />
+      <arg column="account_name" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="account_password" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="mobile" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="email" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="auth_flag" jdbcType="CHAR" javaType="java.lang.String" />
+      <arg column="valid_flag" jdbcType="CHAR" javaType="java.lang.String" />
+      <arg column="created_date" jdbcType="TIMESTAMP" javaType="java.util.Date" />
+      <arg column="created_user" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="updated_date" jdbcType="TIMESTAMP" javaType="java.util.Date" />
+      <arg column="updated_user" jdbcType="VARCHAR" javaType="java.lang.String" />
+    </constructor>
+  </resultMap>
+  <sql id="Base_Column_List" >
+    account_id, account_name, account_password, mobile, email, auth_flag, valid_flag, 
+    created_date, created_user, updated_date, updated_user
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_platform_account
+    where account_id = #{accountId,jdbcType=INTEGER}
+  </select>
+
+
+
+  <select id="selectList" parameterType="com.yaic.platform.user_module.entity.ThirdUser" resultMap="BaseResultMap">
+    select
+      <include refid="Base_Column_List" />
+    from t_platform_account
+    <trim prefix="where" prefixOverrides="AND|OR">
+      <if test="accountName != null and accountName != ''" >
+        and account_name like concat( #{accountName,jdbcType=VARCHAR} , '%')
+      </if>
+      <if test="mobile != null and mobile != ''" >
+        and mobile = #{mobile,jdbcType=VARCHAR}
+      </if>
+      <if test="email != null and email != ''" >
+        and email = #{email,jdbcType=VARCHAR}
+      </if>
+      <if test="authFlag != null" >
+        and auth_flag = #{authFlag,jdbcType=CHAR}
+      </if>
+      <if test="validFlag != null" >
+        and valid_flag = #{validFlag,jdbcType=CHAR}
+      </if>
+    </trim>
+    order by created_date desc
+  </select>
+
+
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_platform_account
+    where account_id = #{accountId,jdbcType=INTEGER}
+  </delete>
+
+
+
+  <delete id="deleteByIds" parameterType="java.util.List">
+    delete from t_platform_account
+    where account_id in
+    <foreach collection="array" item="id" open="(" close=")" separator=",">
+      #{id,jdbcType=INTEGER}
+    </foreach>
+  </delete>
+
+
+
+  <insert id="insert" parameterType="com.yaic.platform.user_module.entity.ThirdUser" >
+    insert into t_platform_account (account_id, account_name, account_password, 
+      mobile, email, auth_flag, 
+      valid_flag, created_date, created_user, 
+      updated_date, updated_user)
+    values (#{accountId,jdbcType=INTEGER}, #{accountName,jdbcType=VARCHAR}, #{accountPassword,jdbcType=VARCHAR}, 
+      #{mobile,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR}, #{authFlag,jdbcType=CHAR}, 
+      #{validFlag,jdbcType=CHAR}, #{createdDate,jdbcType=TIMESTAMP}, #{createdUser,jdbcType=VARCHAR}, 
+      #{updatedDate,jdbcType=TIMESTAMP}, #{updatedUser,jdbcType=VARCHAR})
+  </insert>
+
+
+
+  <insert id="insertSelective" parameterType="com.yaic.platform.user_module.entity.ThirdUser" >
+    insert into t_platform_account
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="accountId != null" >
+        account_id,
+      </if>
+      <if test="accountName != null" >
+        account_name,
+      </if>
+      <if test="accountPassword != null" >
+        account_password,
+      </if>
+      <if test="mobile != null" >
+        mobile,
+      </if>
+      <if test="email != null" >
+        email,
+      </if>
+      <if test="authFlag != null" >
+        auth_flag,
+      </if>
+      <if test="validFlag != null" >
+        valid_flag,
+      </if>
+      <if test="createdDate != null" >
+        created_date,
+      </if>
+      <if test="createdUser != null" >
+        created_user,
+      </if>
+      <if test="updatedDate != null" >
+        updated_date,
+      </if>
+      <if test="updatedUser != null" >
+        updated_user,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="accountId != null" >
+        #{accountId,jdbcType=INTEGER},
+      </if>
+      <if test="accountName != null" >
+        #{accountName,jdbcType=VARCHAR},
+      </if>
+      <if test="accountPassword != null" >
+        #{accountPassword,jdbcType=VARCHAR},
+      </if>
+      <if test="mobile != null" >
+        #{mobile,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null" >
+        #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="authFlag != null" >
+        #{authFlag,jdbcType=CHAR},
+      </if>
+      <if test="validFlag != null" >
+        #{validFlag,jdbcType=CHAR},
+      </if>
+      <if test="createdDate != null" >
+        #{createdDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createdUser != null" >
+        #{createdUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updatedDate != null" >
+        #{updatedDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatedUser != null" >
+        #{updatedUser,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yaic.platform.user_module.entity.ThirdUser" >
+    update t_platform_account
+    <set >
+      <if test="accountName != null" >
+        account_name = #{accountName,jdbcType=VARCHAR},
+      </if>
+      <if test="accountPassword != null" >
+        account_password = #{accountPassword,jdbcType=VARCHAR},
+      </if>
+      <if test="mobile != null" >
+        mobile = #{mobile,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null" >
+        email = #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="authFlag != null" >
+        auth_flag = #{authFlag,jdbcType=CHAR},
+      </if>
+      <if test="validFlag != null" >
+        valid_flag = #{validFlag,jdbcType=CHAR},
+      </if>
+      <if test="createdDate != null" >
+        created_date = #{createdDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createdUser != null" >
+        created_user = #{createdUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updatedDate != null" >
+        updated_date = #{updatedDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatedUser != null" >
+        updated_user = #{updatedUser,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where account_id = #{accountId,jdbcType=INTEGER}
+  </update>
+
+
+
+
+
+  <update id="updateByPrimaryKey" parameterType="com.yaic.platform.user_module.entity.ThirdUser" >
+    update t_platform_account
+    set account_name = #{accountName,jdbcType=VARCHAR},
+      account_password = #{accountPassword,jdbcType=VARCHAR},
+      mobile = #{mobile,jdbcType=VARCHAR},
+      email = #{email,jdbcType=VARCHAR},
+      auth_flag = #{authFlag,jdbcType=CHAR},
+      valid_flag = #{validFlag,jdbcType=CHAR},
+      created_date = #{createdDate,jdbcType=TIMESTAMP},
+      created_user = #{createdUser,jdbcType=VARCHAR},
+      updated_date = #{updatedDate,jdbcType=TIMESTAMP},
+      updated_user = #{updatedUser,jdbcType=VARCHAR}
+    where account_id = #{accountId,jdbcType=INTEGER}
+  </update>
+</mapper>

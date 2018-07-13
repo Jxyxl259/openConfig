@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yaic.platform.partner_module.dao.PartnerDao" >
+  <resultMap id="BaseResultMap" type="com.yaic.platform.partner_module.entity.Partner" >
+    <constructor >
+      <idArg column="partner_id" jdbcType="INTEGER" javaType="java.lang.Integer" />
+      <arg column="partner_name" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="partner_img" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="partner_invalid" jdbcType="CHAR" javaType="java.lang.String" />
+      <arg column="partner_remark" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="partner_field_aa" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="created_date" jdbcType="TIMESTAMP" javaType="java.util.Date" />
+      <arg column="created_user" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="update_date" jdbcType="TIMESTAMP" javaType="java.util.Date" />
+      <arg column="updated_user" jdbcType="VARCHAR" javaType="java.lang.String" />
+    </constructor>
+  </resultMap>
+
+
+  <sql id="Base_Column_List">
+    partner_id, partner_name, partner_img, partner_invalid, partner_remark, partner_field_aa, 
+    created_date, created_user, update_date, updated_user
+  </sql>
+
+
+
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_platform_partner
+    where partner_id = #{partnerId,jdbcType=INTEGER}
+  </select>
+
+
+  <select id="selectList" parameterType="com.yaic.platform.partner_module.entity.Partner" resultMap="BaseResultMap">
+
+    select
+    <include refid="Base_Column_List" />
+    from t_platform_partner
+    <trim prefix="where" prefixOverrides="AND|OR">
+      <if test="partnerName != null and partnerName != ''" >
+        and partner_name like  concat( #{partnerName,jdbcType=VARCHAR} , '%')
+      </if>
+      <if test="partnerInvalid != null and partnerInvalid != ''" >
+        and partner_invalid = #{partnerInvalid,jdbcType=CHAR}
+      </if>
+      <if test="createdUser != null and createdUser != ''" >
+        and created_user = #{createdUser,jdbcType=VARCHAR}
+      </if>
+    </trim>
+    order by created_date desc
+  </select>
+
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_platform_partner
+    where partner_id = #{partnerId,jdbcType=INTEGER}
+  </delete>
+
+
+
+  <delete id="deleteByIds" parameterType="java.util.List">
+    delete from t_platform_partner
+    where partner_id in
+    <foreach collection="array" item="id" open="(" close=")" separator=",">
+      #{id,jdbcType=INTEGER}
+    </foreach>
+  </delete>
+
+
+
+  <insert id="insert" parameterType="com.yaic.platform.partner_module.entity.Partner" >
+    insert into t_platform_partner (partner_id, partner_name, partner_img, 
+      partner_invalid, partner_remark, partner_field_aa, 
+      created_date, created_user, update_date, 
+      updated_user)
+    values (#{partnerId,jdbcType=INTEGER}, #{partnerName,jdbcType=VARCHAR}, #{partnerImg,jdbcType=VARCHAR}, 
+      #{partnerInvalid,jdbcType=CHAR}, #{partnerRemark,jdbcType=VARCHAR}, #{partnerFieldAa,jdbcType=VARCHAR}, 
+      #{createdDate,jdbcType=TIMESTAMP}, #{createdUser,jdbcType=VARCHAR}, #{updateDate,jdbcType=TIMESTAMP}, 
+      #{updatedUser,jdbcType=VARCHAR})
+  </insert>
+
+
+
+  <insert id="insertSelective" parameterType="com.yaic.platform.partner_module.entity.Partner" >
+    insert into t_platform_partner
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="partnerId != null" >
+        partner_id,
+      </if>
+      <if test="partnerName != null" >
+        partner_name,
+      </if>
+      <if test="partnerImg != null" >
+        partner_img,
+      </if>
+      <if test="partnerInvalid != null" >
+        partner_invalid,
+      </if>
+      <if test="partnerRemark != null" >
+        partner_remark,
+      </if>
+      <if test="partnerFieldAa != null" >
+        partner_field_aa,
+      </if>
+      <if test="createdDate != null" >
+        created_date,
+      </if>
+      <if test="createdUser != null" >
+        created_user,
+      </if>
+      <if test="updateDate != null" >
+        update_date,
+      </if>
+      <if test="updatedUser != null" >
+        updated_user,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="partnerId != null" >
+        #{partnerId,jdbcType=INTEGER},
+      </if>
+      <if test="partnerName != null" >
+        #{partnerName,jdbcType=VARCHAR},
+      </if>
+      <if test="partnerImg != null" >
+        #{partnerImg,jdbcType=VARCHAR},
+      </if>
+      <if test="partnerInvalid != null" >
+        #{partnerInvalid,jdbcType=CHAR},
+      </if>
+      <if test="partnerRemark != null" >
+        #{partnerRemark,jdbcType=VARCHAR},
+      </if>
+      <if test="partnerFieldAa != null" >
+        #{partnerFieldAa,jdbcType=VARCHAR},
+      </if>
+      <if test="createdDate != null" >
+        #{createdDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createdUser != null" >
+        #{createdUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateDate != null" >
+        #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatedUser != null" >
+        #{updatedUser,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+
+
+
+  <update id="updateByPrimaryKeySelective" parameterType="com.yaic.platform.partner_module.entity.Partner" >
+    update t_platform_partner
+    <set >
+      <if test="partnerName != null and partnerName !=''" >
+        partner_name = #{partnerName,jdbcType=VARCHAR},
+      </if>
+      <if test="partnerImg != null and partnerImg != ''" >
+        partner_img = #{partnerImg,jdbcType=VARCHAR},
+      </if>
+      <if test="partnerInvalid != null and partnerInvalid != ''" >
+        partner_invalid = #{partnerInvalid,jdbcType=CHAR},
+      </if>
+      <if test="partnerRemark != null and partnerRemark != ''" >
+        partner_remark = #{partnerRemark,jdbcType=VARCHAR},
+      </if>
+      <if test="partnerFieldAa != null and partnerFieldAa != ''" >
+        partner_field_aa = #{partnerFieldAa,jdbcType=VARCHAR},
+      </if>
+      <if test="createdDate != null" >
+        created_date = #{createdDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createdUser != null and createdUser != ''" >
+        created_user = #{createdUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateDate != null" >
+        update_date = #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatedUser != null and updatedUser != ''" >
+        updated_user = #{updatedUser,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where partner_id = #{partnerId,jdbcType=INTEGER}
+  </update>
+
+
+
+  <update id="updateByPrimaryKey" parameterType="com.yaic.platform.partner_module.entity.Partner" >
+    update t_platform_partner
+    set partner_name = #{partnerName,jdbcType=VARCHAR},
+      partner_img = #{partnerImg,jdbcType=VARCHAR},
+      partner_invalid = #{partnerInvalid,jdbcType=CHAR},
+      partner_remark = #{partnerRemark,jdbcType=VARCHAR},
+      partner_field_aa = #{partnerFieldAa,jdbcType=VARCHAR},
+      created_date = #{createdDate,jdbcType=TIMESTAMP},
+      created_user = #{createdUser,jdbcType=VARCHAR},
+      update_date = #{updateDate,jdbcType=TIMESTAMP},
+      updated_user = #{updatedUser,jdbcType=VARCHAR}
+    where partner_id = #{partnerId,jdbcType=INTEGER}
+  </update>
+
+
+
+</mapper>
