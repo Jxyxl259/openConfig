@@ -102,6 +102,10 @@ function loadList(pageSize, pageNum){
             }else{
                 currentPagenationInfo = "当前显示第 1 ~ " + totalItemNums + " 条，共 " + totalItemNums + " 条记录";
             }
+            if(currentPage === 0 && pageTotal === 0 && totalItemNums === 0){
+                currentPagenationInfo = "";
+            }
+
             $("#tableId_info").html(currentPagenationInfo);
 
 
@@ -178,23 +182,26 @@ $('#selectInfo').on( 'click', function () {
 
 /** 批量删除 */
 $("#deleteRow").click(function() {
-//	alert("dd");
-    array = new Array();
+    idsArray = new Array();
+    imgPathArray = new Array();
     $("input[type='checkbox']:gt(0):checked").each(
         function() {
-
-            var productId = $(this).parent().parent().find("td").eq(10).html();
-//	    	array.push($(this).parent().next().text());
-            array.push(productId);
+            var productId = $(this).parent().parent().find("td").eq(11).html();
+            idsArray.push(productId);
+            var productImgPath = $(this).parent().parent().find("td").eq(3).html();
+            imgPathArray.push(productImgPath);
         }
     );
-    if (array == 0) {	alert("请勾选!!");	}
+    if (idsArray == 0) {	alert("请勾选!!");	}
     else {
         layer.confirm('确定删除选中行信息吗?', function(index){
             $.ajax({
                 url:"/product/deleteByIds",
                 type:"POST",
-                data:{"productIds":array.toString()},
+                data:{
+                    "productIds":idsArray.toString(),
+                    "productImgsPath":imgPathArray.toString()
+                },
                 success:function(result){
                     layer.msg(result.resultMsg,{icon:1,time:2000});
                     loadList(itemNumPerPage, 1);
@@ -207,13 +214,7 @@ $("#deleteRow").click(function() {
 
 /** 产品详情展示信息添加*/
 $("#addRow").on({ "click" : function(event){
-
-        PartnerCommon.showAddProductForm(event);
-
-    // 将 添加产品信息的form表单所在div元素的display:none属性去掉
-    //$(".productInfoFormContainer").attr("style","");
-        //PartnerCommon.addProduct(event);
-        //setTimeout('selectBoxInfo()',500);
+        ProductCommon.showAddProductForm(event);
     }
 });
 
@@ -228,7 +229,7 @@ $("#modifyRow").on({'click' : function(event){
             var productId = $(item[0]).parent("td").parent("tr").attr('tid');
         }
 
-        PartnerCommon.modifyPartner(event, productId);
+        ProductCommon.modifyProduct(event, productId);
         setTimeout('selectBoxInfo()',500);
     }
 });
@@ -238,7 +239,7 @@ var columsName = {
     "number":"编号",
     "productId": "productId",
     "productName": "产品名称",
-    "productImg": "展示图片",
+    "productImg": "图片存放路径",
     "productInvalid": "有效",
     "productRemark":"产品备注",
     "productDivHtml": "产品展示页HTML代码",
@@ -247,26 +248,29 @@ var columsName = {
     "createdUser": "创建人",
     "extn": "操作",
     "updatedUser": "更新人",
-    "productImgUrl": "产品图片路径"
+    "productImgUrl": "产品图片路径",
+    "productTxt": "产品介绍"
 };
 var columns = [
     /*0*/{"data": "productId", "title": columsName["selectAll"],"width":"2%"},//checkbox
     /*1*/{"data": "productId", "title": columsName["number"],"width":"3%"},//在当前页中显示的序号
     /*2*/{"data": "productName", "title": columsName["productName"],"width":"10%","sClass":"editClass"},//产品名称
-    /*3*/{"data": "productImg", "title": columsName["productImg"],"width":"5%"},//产品展示缩略图
+    /*3*/{"data": "productImg", "title": columsName["productImg"],"width":"10%"},//产品图片存放路径
     /*4*/{"data": "productDivHtml", "title": columsName["productDivHtml"],"width":"15%","sClass":"editClass"},//产品展示HTML代码
     /*5*/{"data": "productRemark", "title": columsName["productRemark"],"width":"15%","sClass":"editClass"},//产品备注
     /*6*/{"data": "productInvalid", "title": columsName["productInvalid"],"width":"4%","sClass":"editClass"},//有效标识
     /*7*/{"data": "createdDate", "title": columsName["createdDate"],"width":"3%","sClass":"hidden"},//创建时间
-    /*8*/{"data": "createdUser", "title": columsName["createdUser"],"width":"7%"},//创建人
-    /*9*/{"data": "productId", "title": columsName["extn"],"width":"10%"},//操作
-    /*10*/{"data": "productId", "title": columsName["ceshi"],"width":"3%","sClass":"hidden"},//测试
-    /*11*/{"data": "updatedUser", "title": columsName["updatedUser"],"width":"3%","sClass":"hidden"},//更新用户
-    /*12*/{"data": "updateDate", "title": columsName["updateDate"],"width":"3%","sClass":"hidden"},//更新时间
-    /*13*/{"data": "productImg", "title": columsName["productImgUrl"],"width":"10%","sClass":"hidden"}//产品图片url路径
+    /*8*/{"data": "createdUser", "title": columsName["createdUser"],"width":"4%"},//创建人
+    /*9*/{"data": "updatedUser", "title": columsName["updatedUser"],"width":"4%","sClass":"editClass"},//更新人
+    /*10*/{"data": "productId", "title": columsName["extn"],"width":"10%"},//操作
+    /*11*/{"data": "productId", "title": columsName["ceshi"],"sClass":"hidden"},//测试
+    /*12*/{"data": "updateDate", "title": columsName["updateDate"],"sClass":"hidden"},//更新时间
+    /*13*/{"data": "productImg", "title": columsName["productImgUrl"],"sClass":"hidden"},//产品图片url路径
+    /*14*/{"data": "productTxt", "title": columsName["productTxt"],"sClass":"hidden"}//产品介绍
 
 
 ];
+
 
 var commonObj = {
     init:function(){
@@ -313,13 +317,9 @@ var commonObj = {
                     $(cell).parent().attr('tid',tid);
                     cell.innerHTML =  i + 1;
                 });
-                // 产品展示缩略图
-                this.api().column(3).nodes().each(function(cell, i){
-                    var imgUrl = cell.textContent;
-                    cell.innerHTML = '<img src="../../..'+ imgUrl +'" style="width: 60px;height: 60px"/>';
-                });
                 // 产品展示页HTML代码
                 this.api().column(4).nodes().each(function(cell, i){
+                    $(cell).attr("class","editClass html_code");
                     var productDivHtml = String(cell.innerHTML);
                     // 使用 innerText 将HTML代码进行转义，转义后在页面显示为纯文本，不被当做HTML代码解析
                     cell.innerText = productDivHtml;
@@ -329,7 +329,7 @@ var commonObj = {
                     var valid_status_info = valid_status == 0 ? '<font color="red" size="3">x</font>' : '<font size="3">√</font>';
                     cell.innerHTML = valid_status_info + '<input class="tab_input" type="hidden" value="'+ valid_status +'"/>';
                 });
-                this.api().column(9).nodes().each(function(cell, i){
+                this.api().column(10).nodes().each(function(cell, i){
                     var id = cell.textContent;
                     cell.innerHTML ='<button class="edi_btn uEditBtn" id='+id+'>编辑</button><button class="edi_btn uDetailBtn">详情</button><button class="edi_btn uDeleteBtn"><i class="Hui-iconfont">&#xe6e2;</i></button>';
                 })
@@ -341,6 +341,7 @@ var commonObj = {
 
         $(".table").on("click",".uEditBtn",function(){
             var strOld = $(this).html();
+
             if("编辑" === strOld){
                 //保留修改之前的 tr元素内的HTML代码
                 currentTrContent = $(this).parent().parent().html();
@@ -378,9 +379,10 @@ var commonObj = {
                         var status_flag = obj_text.val();
                         modified_val = status_flag === '0' ? '<font color="red" size="3">x</font>' : '<font size="3">√</font>';
                         modified_val += '<input class="tab_input" type="hidden" value="'+ status_flag +'"/>';
-
+                        $(this).html(modified_val);
+                    }else{
+                        this.innerText = modified_val;
                     }
-                    $(this).html(modified_val);
                 }
 
 
@@ -390,15 +392,34 @@ var commonObj = {
             if(strOld == '编辑'){
                 var currentId = $(this).attr("id");
             }else if(strOld == '确定'){
+
+                var productId_td_ele = $(this).parent().parent().find("td").eq(11);
+                var productName_td_ele =  $(this).parent().parent().find("td").eq(2);
+                var productDivHtml_td_ele = $(this).parent().parent().find("td").eq(4);
+                var productRemark_td_ele = $(this).parent().parent().find("td").eq(5);
+                var productInvalid_td_ele = $(this).parent().parent().find("td").eq(6);
+                var updatedUser_td_ele = $(this).parent().parent().find("td").eq(9);
+
+                var productId = $.trim(productId_td_ele.html());
+                var productName = $.trim(productName_td_ele.html());
+                var productDivHtml = $.trim(String(productDivHtml_td_ele[0].innerText));
+                var productRemark = $.trim(productRemark_td_ele.html());
+                var productInvalid = $.trim(productInvalid_td_ele.children().eq(1).val());
+                var updatedUser = $.trim(updatedUser_td_ele.html());
+
+                if(isEmpty(productId) || isEmpty(productName) || isEmpty(productDivHtml) || isEmpty(productRemark) || isEmpty(productInvalid) || isEmpty(updatedUser)){
+                    layer.alert('请完善添加信息之后提交');
+                    return ;
+                }
+
                 RestfulClient.post("/product/modifyProductInfo",
                     {
-                        "productId" : $.trim($(this).parent().parent().find("td").eq(10).html()),
-                        "productName" : $.trim($(this).parent().parent().find("td").eq(2).html()),
-                        "productImg" : $.trim($(this).parent().parent().find("td").eq(13).html()),
-                        "productDivHtml" : $.trim($(this).parent().parent().find("td").eq(4).html()),
-                        "productRemark" : $.trim($(this).parent().parent().find("td").eq(5).html()),
-                        "productInvalid": $.trim($(this).parent().parent().find("td").eq(6).children().eq(1).val())
-                        //"test" : $("input[name='dataCheckBox']:checked:eq(0)").parent().parent().find("td").eq(2).html()
+                        "productId" : productId,
+                        "productName" : productName,
+                        "productDivHtml" : productDivHtml,
+                        "productRemark" : productRemark,
+                        "productInvalid": productInvalid,
+                        "updatedUser": updatedUser
                     },
                     function(result) {
                         if(result.resultCode != 0){
@@ -407,7 +428,6 @@ var commonObj = {
                             return;
                         }else{
                             layer.msg(result.resultMsg,{icon:1,time:2000});
-                            loadList(itemNumPerPage, 1);
                         }
                     }
                 );
@@ -420,7 +440,7 @@ var commonObj = {
     deleteTab:function(){
         $(".table").on("click",".uDeleteBtn",function(){
             var that = $(this);
-            var id = $(this).parent().parent().find("td").eq(10).html();
+            var id = $(this).parent().parent().find("td").eq(11).html();
             var table = $('#tableId').DataTable();
             var dataTest = table.row( this ).data();
             layer.confirm('确定删除当前信息吗?', function(index){
@@ -437,22 +457,99 @@ var commonObj = {
         })
     },
 
-    //当前行内容详情
+    /** 当前行内容详情 */
     detailTab:function(){
         var tabObj = {};
         var addTK = '';
 
         $(".table").on("click",".uDetailBtn",function(){
             var s = $(this).parent().parent().find("td");
-            addTK ='<ul class="alert_ul">'
-                +'<li class="div_wrap"><div class="li_div li_DivL"><i>合作方名称</i></div>:<div class="li_div li_DivR">'+s.eq(2).html()+'</div></li>'
-                +'<li class="div_wrap"><div class="li_div li_DivL"><i>合作方图片</i></div>:<div class="li_div li_DivR">'+s.eq(3).html()+'</div></li>'
-                +'<li class="div_wrap"><div class="li_div li_DivL"><i>有效</i></div>:<div class="li_div li_DivR">'+ s.eq(6).html() +'</div></li>'
-                +'<li class="div_wrap"><div class="li_div li_DivL"><i>创建时间</i></div>:<div class="li_div li_DivR">'+ s.eq(7).html() +'</div></li>'
-                +'<li class="div_wrap"><div class="li_div li_DivL"><i>创建人</i></div>:<div class="li_div li_DivR">'+ s.eq(8).html() +'</div></li>'
-                +'<li class="div_wrap"><div class="li_div li_DivL"><i>更新时间</i></div>:<div class="li_div li_DivR">'+ s.eq(11).html() +'</div></li>'
-                +'<li class="div_wrap"><div class="li_div li_DivL"><i>更新人</i></div>:<div class="li_div li_DivR">'+ s.eq(12).html() +'</div></li>'
-                +'</ul>';
+            addTK =
+
+            '    <table class="table table-border  table-bg product_detail"'+
+            '           id="product_detail_table">'+
+            '        <tbody>'+
+            '        <tr>'+
+            '            <td class="item" width="20%" >'+
+            '                产品名称</td>'+
+            '            <td class="content_td">'+
+            '                <div class="content_div">'+ s.eq(2).html() +'</div></td>'+
+            '            <td width="10%">&nbsp;</td>'+
+            '        </tr>'+
+            '        <tr >'+
+            '            <td class="item text_massive" width="20%" >'+
+            '                产品介绍</td>'+
+            '            <td class="content_td text_massive">'+
+            '                <div class="content_div">'+ s.eq(14).html() +'</div></td>'+
+            '            <td width="10%">&nbsp;</td>'+
+            '        </tr>'+
+            '        <tr >'+
+            '            <td class="item text_massive" width="20%" >'+
+            '                产品备注</td>'+
+            '            <td class="content_td text_massive">'+
+            '                <div class="content_div">'+ s.eq(5).html() +'</div></td>'+
+            '            <td width="10%">&nbsp;</td>'+
+            '        </tr>'+
+            '        <tr >'+
+            '            <td class="item text_massive" width="20%">'+
+            '                HTML 代码</td>'+
+            '            <td class="content_td text_massive">'+
+            '                <div class="content_div">'+ s.eq(4).html() +'</div></td>'+
+            '            <td width="10%">&nbsp;</td>'+
+            '        </tr>'+
+            '        <tr>'+
+            '            <td class="item" width="20%" >'+
+            '                图片路径</td>'+
+            '            <td class="content_td">'+
+            '                <div class="content_div">'+ s.eq(3).html() +'</div></td>'+
+            '            <td width="10%">&nbsp;</td>'+
+            '        </tr>'+
+            '        <tr>'+
+            '            <td class="item" width="20%" >'+
+            '                是否有效'+
+            '            </td>'+
+            '            <td class="content_td">'+
+            '                <div class="content_div">'+ s.eq(6).html() +'</div></td>'+
+            '            <td width="10%">&nbsp;</td>'+
+            '        </tr>'+
+            '        <tr>'+
+            '            <td class="item" width="20%" >'+
+            '                备用字段Aa</td>'+
+            '            <td class="content_td">'+
+            '                <div class="content_div"></div></td>'+
+            '            <td width="10%">&nbsp;</td>'+
+            '        </tr>'+
+            '        <tr>'+
+            '            <td class="item" width="20%" >'+
+            '                创建人</td>'+
+            '            <td class="content_td">'+
+            '               <div class="content_div">'+ s.eq(8).html() +'</div></td>'+
+            '            <td width="10%">&nbsp;</td>'+
+            '        </tr>'+
+            '        <tr>'+
+            '            <td class="item" width="20%" >'+
+            '                创建时间</td>'+
+            '            <td class="content_td">'+
+            '               <div class="content_div">'+ s.eq(7).html() +'</div></td>'+
+            '            <td width="10%">&nbsp;</td>'+
+            '        </tr>'+
+            '        <tr>'+
+            '            <td class="item" width="20%" >'+
+            '                修改人</td>'+
+            '            <td class="content_td">'+
+            '               <div class="content_div">'+ s.eq(9).html() +'</div></td>'+
+            '            <td width="10%">&nbsp;</td>'+
+            '        </tr>'+
+            '        <tr>'+
+            '            <td class="item" width="20%" >'+
+            '                修改时间</td>'+
+            '            <td class="content_td">'+
+            '               <div class="content_div">'+ s.eq(12).html() +'</div></td>'+
+            '            <td width="10%">&nbsp;</td>'+
+            '        </tr>'+
+            '        </tbody>'+
+            '    </table>';
+
             layer.open({
                 type :1,
                 title: ['查看详情', 'background-color:#f5fafe;font-size:18px;height:60px;line-height:60px'],
@@ -468,22 +565,90 @@ commonObj.init();
 
 
 
-var PartnerCommon = function(){
+
+function getModifyFormTemplate(){
+
+    var tdEles = $("input[name='dataCheckBox']:checked:eq(0)").parent().parent().find("td");
+
+    var modifyFromTemplate = ""+
+
+    "<div class='pd-30'>"+
+    "<form id='us'>"+
+    "<table class='table table-border  table-bg  ' style='border: 0 !important; border-collapse: separate;' id='accountTable'>"+
+        "<tr>"+
+            "<td class='text-r' width='20%' style='text-align: right !important; padding: 8px; line-height: 20px; word-break: break-all;'>"+
+                "<font style='color: red'>*</font>产品名称</td>"+
+            "<td width='55%' style='text-align: right !important; padding: 8px; line-height: 20px; word-break: break-all;'>"+
+                "<input name='productName' id='productName' class='input-text' type='text' value='" + tdEles.eq(2).html() +"'/></td>"+
+            "<td width='10%'>&nbsp;</td>"+
+        "</tr>"+
+        "<tr>"+
+            "<td class='text-r' width='20%' style='text-align: right !important; padding: 8px; line-height: 20px; word-break: break-all;'>"+
+                "<font style='color: red'>*</font>产品展示页HTML代码</td>"+
+            "<td width='55%' style='text-align: left !important; padding: 5px; word-break: break-all;height: 160px'>"+
+                "<textarea name='productDivHtml' id='productDivHtml' style='width: 340px;height: 100px;border: 1px solid #ccc;' >" +
+                "" + tdEles.eq(4).html() + ""+
+                "</textarea> </td>"+
+            "<td width='10%'>&nbsp;</td>"+
+        "</tr>"+
+        "<tr>"+
+            "<td class='text-r' width='20%' style='text-align: right !important; padding: 8px; line-height: 20px; word-break: break-all;'>"+
+                "<font style='color: red'>*</font>产品介绍</td>"+
+            "<td width='55%' style='text-align: left !important; padding: 5px; word-break: break-all;height: 160px'>"+
+                "<textarea name='productTxt' id='productTxt' style='width: 340px;height: 100px;border: 1px solid #ccc;' >" +
+                "" + tdEles.eq(14).html() + ""+
+                "</textarea></td>"+
+            "<td width='10%'>&nbsp;</td>"+
+        "</tr>"+
+        "<tr>"+
+            "<td class='text-r' width='20%' style='text-align: right !important; padding: 8px; line-height: 20px; word-break: break-all;'>"+
+                "<font style='color: red'>*</font>产品备注</td>"+
+            "<td width='55%' style='text-align: left !important; padding: 5px; word-break: break-all;height: 160px'>"+
+                "<textarea name='productRemark' id='productRemark' style='width: 340px;height: 100px;border: 1px solid #ccc;' >" +
+                "" + tdEles.eq(5).html() + ""+
+                "</textarea></td>"+
+            "<td width='10%'>&nbsp;</td>"+
+        "</tr>"+
+        "<tr>"+
+            "<td class='text-r' width='20%' style='text-align: right !important; padding: 8px; line-height: 20px; word-break: break-all;'>"+
+                "<font style='color: red'>*</font>是否有效</td>"+
+            "<td width='55%' style='text-align: right !important; padding: 8px; line-height: 20px; word-break: break-all;'>"+
+                "<input name='productInvalid' id='productInvalid' class='input-text' type='text' placeholder='1:有效 0:无效' " +
+                        "value='" + tdEles.eq(6).children().eq(1).val() +"'/></td>"+
+            "<td width='10%'>&nbsp;</td>"+
+        "</tr>"+
+        "<tr>"+
+            "<td class='text-r' width='20%' style='text-align: right !important; padding: 8px; line-height: 20px; word-break: break-all;'>"+
+                "<font style='color: red'>*</font>更新人</td>"+
+            "<td width='55%' style='text-align: right !important; padding: 8px; line-height: 20px; word-break: break-all;'>"+
+                "<input name='updatedUser' id='updatedUser' class='input-text' type='text'"+
+                        "value='" + tdEles.eq(9).html() +"'/></td>"+
+            "<td width='10%'>&nbsp;</td>"+
+        "</tr>"+
+    "</table>"+
+
+    "<input id='reqType' hidden='hidden' value='${add}'>"+
+    "</form>";
+
+    return modifyFromTemplate;
+}
+
+
+var ProductCommon = function(){
     return {
         // 弹出添加产品表单
         showAddProductForm : function(event){
             layer.open({
                 type: 2,
-                area: ['700px', '550px'],
+                area: ['700px', '520px'],
                 fixed: false, //不固定
                 maxmin: true,
                 content: './fragement/product_add_form.html'
             });
         },
 
-        // TODO 修改产品信息也使用弹出html页面的方式
-        // 合作方信息修改
-        modifyPartner : function(event,partnerId){
+        // 产品信息修改
+        modifyProduct : function(event,productId){
             layer.open({
                 type : 1,
                 fixed : true, // 不固定
@@ -498,21 +663,19 @@ var PartnerCommon = function(){
                     var data = $("#us").formData();
                     //alert(JSON.stringify(data));
                     var s = /^((?!<script>).)*$/;
-                    if(data.productName==""||data.productImg==""||data.partnerInvalid==""||data.updatedUser==""){
+                    if(data.productName==""|| data.productDivHtml ==""|| data.productRemark==""||data.productInvalid==""||data.updatedUser==""){
                         layer.alert('请完善添加信息之后提交');//使用parent可以获得父页面DOM
                         return ;
-                    }else if(!s.test(data.partnerName)){
-                        layer.alert("您输入的账户代码含有非法字符，请重新录入");
-                        return;
                     }
                     RestfulClient.post("/product/modifyProductInfo",
                         {
-                            "partnerId" : parseInt($.trim(partnerId)),
-                            "partnerName" : $.trim(data.partnerName),
-                            "partnerInvalid" : $.trim(data.partnerInvalid),
-                            "partnerImg" : $.trim(data.partnerImg),
-                            "partnerRemark" : $.trim(data.partnerRemark),
-                            "updatedUser" : $.trim(data.updatedUser)
+                            "productId" : parseInt($.trim(productId)),
+                            "productDivHtml" : $.trim(data.productDivHtml),
+                            "productName" : $.trim(data.productName),
+                            "productInvalid" : $.trim(data.productInvalid),
+                            "productRemark" : $.trim(data.productRemark),
+                            "updatedUser" : $.trim(data.updatedUser),
+                            "productTxt" : $.trim(data.productTxt)
                         },
                         function(result) {
                             layer.alert(result.resultMsg);
@@ -533,16 +696,16 @@ var PartnerCommon = function(){
 }();
 
 
-function selectBoxInfo(){
-    RestfulClient.post("/source/listAll", {},
-        function(result) {
-            data = result.dataList;
-            for(var i in data){
-                $("#selectBox").append("<option value='"+data[i].dataSourceId+"'>'"+data[i].sourceName+"'</option>");
-            }
-        }
-    );
-}
+// function selectBoxInfo(){
+//     RestfulClient.post("/source/listAll", {},
+//         function(result) {
+//             data = result.dataList;
+//             for(var i in data){
+//                 $("#selectBox").append("<option value='"+data[i].dataSourceId+"'>'"+data[i].sourceName+"'</option>");
+//             }
+//         }
+//     );
+// }
 
 function genAppId(){
 //	alert("genAppid");
@@ -557,3 +720,11 @@ $(".table_box").delegate('#tableId tr', 'click', function () {
     var nTds = $("td",this);
     var sBrowser = $(nTds[11]).text();//获取第一列的值，其中第一列为隐藏列
 });
+
+function isEmpty(obj){
+    if(typeof obj == "undefined" || obj == null || obj == ""){
+        return true;
+    }else{
+        return false;
+    }
+}

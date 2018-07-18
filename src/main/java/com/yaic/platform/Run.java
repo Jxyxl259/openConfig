@@ -4,14 +4,15 @@ import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.ServletComponentScan;
+import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
-
+@EnableSwagger2
 @ServletComponentScan
 @SpringBootApplication		//启动标志
 @MapperScan(basePackages={
-		"com.yaic.platform.user_module.dao",
-		"com.yaic.platform.partner_module.dao",
-		"com.yaic.platform.product_module.dao"})		//mybatis reload xml
+		"com.yaic.platform.userModule.dao",
+		"com.yaic.platform.partnerModule.dao",
+		"com.yaic.platform.productModule.dao"})		//mybatis reload xml
 public class Run{
 
 	/**

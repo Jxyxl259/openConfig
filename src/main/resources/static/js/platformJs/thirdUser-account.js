@@ -101,6 +101,10 @@ function loadList(pageSize, pageNum){
             }else{
                 currentPagenationInfo = "当前显示第 1 ~ " + totalItemNums + " 条，共 " + totalItemNums + " 条记录";
             }
+
+            if(currentPage === 0 && pageTotal === 0 && totalItemNums === 0){
+                currentPagenationInfo = "";
+            }
             $("#tableId_info").html(currentPagenationInfo);
 
 

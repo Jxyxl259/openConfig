@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.yaic.platform.partner_module.dao.PartnerDao" >
-  <resultMap id="BaseResultMap" type="com.yaic.platform.partner_module.entity.Partner" >
+<mapper namespace="com.yaic.platform.partnerModule.dao.PartnerDao" >
+  <resultMap id="BaseResultMap" type="com.yaic.platform.partnerModule.entity.Partner" >
     <constructor >
       <idArg column="partner_id" jdbcType="INTEGER" javaType="java.lang.Integer" />
       <arg column="partner_name" jdbcType="VARCHAR" javaType="java.lang.String" />
@@ -32,7 +32,7 @@
   </select>
 
 
-  <select id="selectList" parameterType="com.yaic.platform.partner_module.entity.Partner" resultMap="BaseResultMap">
+  <select id="selectList" parameterType="com.yaic.platform.partnerModule.entity.Partner" resultMap="BaseResultMap">
 
     select
     <include refid="Base_Column_List" />
@@ -69,7 +69,7 @@
 
 
 
-  <insert id="insert" parameterType="com.yaic.platform.partner_module.entity.Partner" >
+  <insert id="insert" parameterType="com.yaic.platform.partnerModule.entity.Partner" >
     insert into t_platform_partner (partner_id, partner_name, partner_img, 
       partner_invalid, partner_remark, partner_field_aa, 
       created_date, created_user, update_date, 
@@ -82,7 +82,7 @@
 
 
 
-  <insert id="insertSelective" parameterType="com.yaic.platform.partner_module.entity.Partner" >
+  <insert id="insertSelective" parameterType="com.yaic.platform.partnerModule.entity.Partner" >
     insert into t_platform_partner
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="partnerId != null" >
@@ -152,7 +152,7 @@
 
 
 
-  <update id="updateByPrimaryKeySelective" parameterType="com.yaic.platform.partner_module.entity.Partner" >
+  <update id="updateByPrimaryKeySelective" parameterType="com.yaic.platform.partnerModule.entity.Partner" >
     update t_platform_partner
     <set >
       <if test="partnerName != null and partnerName !=''" >
@@ -188,7 +188,7 @@
 
 
 
-  <update id="updateByPrimaryKey" parameterType="com.yaic.platform.partner_module.entity.Partner" >
+  <update id="updateByPrimaryKey" parameterType="com.yaic.platform.partnerModule.entity.Partner" >
     update t_platform_partner
     set partner_name = #{partnerName,jdbcType=VARCHAR},
       partner_img = #{partnerImg,jdbcType=VARCHAR},

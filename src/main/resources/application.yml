@@ -9,8 +9,9 @@ server:
     min-spare-threads: 10
   connection-timeout: 5000
 
+
 fileUploadConfig:
-  windows-file-upload-path: "D://fileUpload//img//"
+  windows-file-upload-path: "D:\\fileUpload\\img\\"
   linux-file-upload-path: "/fileUpLoad/img/"
   product-image-file: "product_img"
   partner-image-file: "partner_img"

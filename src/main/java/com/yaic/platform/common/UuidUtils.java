@@ -5,6 +5,13 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.UUID;
 
+/**
+ * 
+ * @Description : uuid工具类
+ * @author : jiangxy
+ * @CreateDate : 2018-07-16 19:28:09
+ *
+ */
 public class UuidUtils {
 	
 	public static String getUuid() {

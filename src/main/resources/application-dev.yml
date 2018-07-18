@@ -23,4 +23,9 @@ logging:
     #com.yaic.auth.thirdparty.dao: debug
     #com.yaic.auth.interior.dao: debug
 
-
+# springBoot开启热部署
+spring.devtools.restart.enabled: true
+# 设置重启的目录
+spring.devtools.restart.additional-paths: src/main/java
+# classpath目录下的WEB-INF文件夹内容修改不重启
+spring.devtools.restart.exclude: WEB-INF/**

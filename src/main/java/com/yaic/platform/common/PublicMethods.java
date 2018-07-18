@@ -13,6 +13,13 @@ import static com.yaic.common.GlobalMessageEnum.FILE_TYPE_UNACCEPT;
 import static com.yaic.common.GlobalMessageEnum.FILE_TYPE_UNKNOW;
 import static com.yaic.platform.common.BaseController.getResults;
 
+/**
+ * 
+ * @Description : 公用方法
+ * @author : jiangxy
+ * @CreateDate : 2018-07-16 19:27:49
+ *
+ */
 public class PublicMethods {
 	
 	private static final Logger logger = LoggerFactory.getLogger(PublicMethods.class);

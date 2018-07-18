@@ -16,7 +16,11 @@ import java.lang.reflect.Method;
 import static com.yaic.common.GlobalMessageEnum.PARAM_ILLEGAL;
 
 /**
- * JSR303数据校验切面
+ * 
+ * @Description : JSR303数据校验切面
+ * @author : jiangxy
+ * @CreateDate : 2018-07-16 19:28:34
+ *
  */
 @Aspect
 @Component

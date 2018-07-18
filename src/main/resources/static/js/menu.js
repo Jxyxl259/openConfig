@@ -2,9 +2,9 @@ $(function(){
 	var menuArr = [
 	{"id":1,"firstMenu":"平台管理","pic":"&#xe616;",
 	"child": [
-		{ "id": "1","secMenu": "合作伙伴管理","href":"openBgHtml/platformHtml/partner_module/partner.html"},
-		{ "id": "2","secMenu": "产品管理","href":"openBgHtml/platformHtml/product_module/product.html" },
-		{ "id": "3","secMenu": "第三方用户管理","href":"openBgHtml/platformHtml/user_module/thirdUser.html" }
+		{ "id": "1","secMenu": "合作伙伴管理","href":"openBgHtml/platformHtml/partnerModule/partner.html"},
+		{ "id": "2","secMenu": "产品管理","href":"openBgHtml/platformHtml/productModule/product.html" },
+		{ "id": "3","secMenu": "第三方用户管理","href":"openBgHtml/platformHtml/userModule/thirdUser.html" }
 		]
 	},
 	{"id":2,"firstMenu":"系统管理","pic":"&#xe613;",

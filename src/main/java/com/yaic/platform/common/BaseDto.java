@@ -1,5 +1,12 @@
 package com.yaic.platform.common;
 
+/**
+ *
+ * @Description : 数据模型类基类
+ * @author : jiangxy
+ * @CreateDate : 2018-07-16 19:26:25
+ *
+ */
 public class BaseDto {
 
 	private Integer pageSize = 10;
