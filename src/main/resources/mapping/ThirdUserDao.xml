@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.yaic.platform.userModule.dao.ThirdUserDao" >
-  <resultMap id="BaseResultMap" type="com.yaic.platform.userModule.entity.ThirdUser" >
+<mapper namespace="com.yaic.platform.dao.ThirdUserDao" >
+  <resultMap id="BaseResultMap" type="com.yaic.platform.entity.ThirdUser" >
     <constructor >
       <idArg column="account_id" jdbcType="INTEGER" javaType="java.lang.Integer" />
       <arg column="account_name" jdbcType="VARCHAR" javaType="java.lang.String" />
@@ -29,7 +29,7 @@
 
 
 
-  <select id="selectList" parameterType="com.yaic.platform.userModule.entity.ThirdUser" resultMap="BaseResultMap">
+  <select id="selectList" parameterType="com.yaic.platform.entity.ThirdUser" resultMap="BaseResultMap">
     select
       <include refid="Base_Column_List" />
     from t_platform_account
@@ -72,7 +72,7 @@
 
 
 
-  <insert id="insert" parameterType="com.yaic.platform.userModule.entity.ThirdUser" >
+  <insert id="insert" parameterType="com.yaic.platform.entity.ThirdUser" >
     insert into t_platform_account (account_id, account_name, account_password, 
       mobile, email, auth_flag, 
       valid_flag, created_date, created_user, 
@@ -85,7 +85,7 @@
 
 
 
-  <insert id="insertSelective" parameterType="com.yaic.platform.userModule.entity.ThirdUser" >
+  <insert id="insertSelective" parameterType="com.yaic.platform.entity.ThirdUser" >
     insert into t_platform_account
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="accountId != null" >
@@ -158,7 +158,7 @@
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.yaic.platform.userModule.entity.ThirdUser" >
+  <update id="updateByPrimaryKeySelective" parameterType="com.yaic.platform.entity.ThirdUser" >
     update t_platform_account
     <set >
       <if test="accountName != null" >
@@ -199,7 +199,7 @@
 
 
 
-  <update id="updateByPrimaryKey" parameterType="com.yaic.platform.userModule.entity.ThirdUser" >
+  <update id="updateByPrimaryKey" parameterType="com.yaic.platform.entity.ThirdUser" >
     update t_platform_account
     set account_name = #{accountName,jdbcType=VARCHAR},
       account_password = #{accountPassword,jdbcType=VARCHAR},

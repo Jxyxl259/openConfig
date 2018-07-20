@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -122,6 +123,26 @@ public class PublicMethods {
 		}
 		return info;
 	}
+
+
+	/**
+	 * 根据图片路径删除产品图片
+	 * @param imgsPath 多个图片路径使用","隔开
+	 */
+	public static void delProductImg(String imgsPath) {
+		if(org.springframework.util.StringUtils.isEmpty(imgsPath)){
+			return;
+		}
+		// 根据路径删除产品图片
+		String[] imgPathArr = imgsPath.split(",");
+		for(String path : imgPathArr ){
+			File del = new File(path);
+			if(del.exists()){
+				del.delete();
+			}
+		}
+	}
+
 
 
 

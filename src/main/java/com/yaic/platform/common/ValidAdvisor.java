@@ -27,8 +27,9 @@ import static com.yaic.common.GlobalMessageEnum.PARAM_ILLEGAL;
 public class ValidAdvisor {
 
 
-	@Pointcut("execution(com.yaic.platform.common.ResultMessage com.yaic.platform.*.controller.*Controller.add*(..)) " +
-			"|| execution(com.yaic.platform.common.ResultMessage com.yaic.platform.*.controller.*Controller.modify*(..))")
+	@Pointcut("execution(com.yaic.platform.common.ResultMessage com.yaic.platform.controller.*Controller.add*(..)) " +
+			"|| execution(com.yaic.platform.common.ResultMessage com.yaic.platform.controller.*Controller.modify*(..))" +
+			"|| execution(com.yaic.platform.common.ResultMessage com.yaic.platform.controller.*Controller.delete*(..))")
 	public void methodPointCut(){
 
 	}

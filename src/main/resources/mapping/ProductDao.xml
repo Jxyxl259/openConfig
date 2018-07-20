@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.yaic.platform.productModule.dao.ProductDao" >
-  <resultMap id="BaseResultMap" type="com.yaic.platform.productModule.entity.Product" >
+<mapper namespace="com.yaic.platform.dao.ProductDao" >
+  <resultMap id="BaseResultMap" type="com.yaic.platform.entity.Product" >
     <constructor >
       <idArg column="product_id" jdbcType="INTEGER" javaType="java.lang.Integer" />
       <arg column="product_name" jdbcType="VARCHAR" javaType="java.lang.String" />
@@ -16,7 +16,7 @@
       <arg column="updated_user" jdbcType="VARCHAR" javaType="java.lang.String" />
     </constructor>
   </resultMap>
-  <resultMap id="ResultMapWithBLOBs" type="com.yaic.platform.productModule.entity.Product" >
+  <resultMap id="ResultMapWithBLOBs" type="com.yaic.platform.entity.Product" >
     <constructor >
       <idArg column="product_id" jdbcType="INTEGER" javaType="java.lang.Integer" />
       <arg column="product_name" jdbcType="VARCHAR" javaType="java.lang.String" />
@@ -55,7 +55,7 @@
   </select>
 
 
-  <select id="selectList" parameterType="com.yaic.platform.productModule.entity.Product" resultMap="ResultMapWithBLOBs">
+  <select id="selectList" parameterType="com.yaic.platform.dto.ProductListDto" resultMap="ResultMapWithBLOBs">
       select
       <include refid="Base_Column_List"/>
       ,
@@ -90,7 +90,7 @@
     </foreach>
   </delete>
 
-  <insert id="insert" parameterType="com.yaic.platform.productModule.entity.Product" >
+  <insert id="insert" parameterType="com.yaic.platform.entity.Product" >
     insert into t_platform_product (product_id, product_name, product_img, 
       product_invalid, product_remark, product_div_html, 
       product_filed_aa, created_date, created_user, 
@@ -102,7 +102,7 @@
       #{updateDate,jdbcType=TIMESTAMP}, #{updatedUser,jdbcType=VARCHAR}, #{productTxt,jdbcType=LONGVARCHAR}
       )
   </insert>
-  <insert id="insertSelective" parameterType="com.yaic.platform.productModule.entity.ProductAddDto" >
+  <insert id="insertSelective" parameterType="com.yaic.platform.dto.ProductAddDto" >
     insert into t_platform_product
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="productId != null" >
@@ -183,7 +183,7 @@
   </insert>
 
 
-  <update id="updateByPrimaryKeySelective" parameterType="com.yaic.platform.productModule.entity.ProductModifyDto" >
+  <update id="updateByPrimaryKeySelective" parameterType="com.yaic.platform.dto.ProductModifyDto" >
     update t_platform_product
     <set >
       <if test="productName != null and productName != ''" >
@@ -194,6 +194,9 @@
       </if>
       <if test="productRemark != null and productRemark != ''" >
         product_remark = #{productRemark,jdbcType=VARCHAR},
+      </if>
+      <if test="setProductImage != null and setProductImage != ''" >
+        product_img = #{setProductImage,jdbcType=VARCHAR},
       </if>
       <if test="productDivHtml != null and productDivHtml != ''" >
         product_div_html = #{productDivHtml,jdbcType=VARCHAR},
@@ -215,7 +218,7 @@
   </update>
 
 
-  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.yaic.platform.productModule.entity.Product" >
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.yaic.platform.entity.Product" >
     update t_platform_product
     set product_name = #{productName,jdbcType=VARCHAR},
       product_img = #{productImg,jdbcType=VARCHAR},
@@ -230,7 +233,7 @@
       product_txt = #{productTxt,jdbcType=LONGVARCHAR}
     where product_id = #{productId,jdbcType=INTEGER}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.yaic.platform.productModule.entity.Product" >
+  <update id="updateByPrimaryKey" parameterType="com.yaic.platform.entity.Product" >
     update t_platform_product
     set product_name = #{productName,jdbcType=VARCHAR},
       product_img = #{productImg,jdbcType=VARCHAR},

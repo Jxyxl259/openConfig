@@ -6,7 +6,7 @@
 	<name>openConfig</name>
 	<description>eAnOPEN background system project</description>
 
-	<packaging>war</packaging>
+	<packaging>jar</packaging>
 
 	<parent>  
 		<groupId>org.springframework.boot</groupId>  
@@ -30,11 +30,11 @@
 
 
 		<!-- 使用外部 Servlet容器 -->
-		<dependency>
+<!--		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-tomcat</artifactId>
 			<scope>provided</scope>
-		</dependency>
+		</dependency>-->
 
 		<dependency>  
 			<groupId>org.springframework.boot</groupId>  
@@ -164,6 +164,7 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-devtools</artifactId>
 			<optional>true</optional>
+			<scope>true</scope>
 		</dependency>
 
 
@@ -184,26 +185,15 @@
 	</dependencies> 
 	
 	<build>
-		<resources>
-			<resource>
-				<directory>src/main/java</directory>
-				<includes>
-					<include>**/*</include>
-				</includes>
-				<filtering>false</filtering>
-			</resource>
-			<resource>
-				<directory>src/main/resources</directory>
-				<includes>
-					<include>**/*</include>
-				</includes>
-				<filtering>false</filtering>
-			</resource>
-		</resources>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<!-- 没有该配置，热部署devtools 不生效 -->
+					<fork>true</fork>
+					<addResources>true</addResources>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>

@@ -53,7 +53,7 @@ spring:
 #mybatis加载
 mybatis:
   mapper-locations: classpath:mapping/*.xml
-  type-aliases-package: com.yaic.auth.*.model
+  type-aliases-package: com.yaic.*.entity
   #下划线转驼峰命名
   configuration:
     map-underscore-to-camel-case: true

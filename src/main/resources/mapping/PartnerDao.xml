@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.yaic.platform.partnerModule.dao.PartnerDao" >
-  <resultMap id="BaseResultMap" type="com.yaic.platform.partnerModule.entity.Partner" >
+<mapper namespace="com.yaic.platform.dao.PartnerDao" >
+  <resultMap id="BaseResultMap" type="com.yaic.platform.entity.Partner" >
     <constructor >
       <idArg column="partner_id" jdbcType="INTEGER" javaType="java.lang.Integer" />
       <arg column="partner_name" jdbcType="VARCHAR" javaType="java.lang.String" />
@@ -32,7 +32,7 @@
   </select>
 
 
-  <select id="selectList" parameterType="com.yaic.platform.partnerModule.entity.Partner" resultMap="BaseResultMap">
+  <select id="selectList" parameterType="com.yaic.platform.dto.PartnerListDto" resultMap="BaseResultMap">
 
     select
     <include refid="Base_Column_List" />
@@ -69,20 +69,18 @@
 
 
 
-  <insert id="insert" parameterType="com.yaic.platform.partnerModule.entity.Partner" >
-    insert into t_platform_partner (partner_id, partner_name, partner_img, 
+  <insert id="insert" parameterType="com.yaic.platform.dto.PartnerAddDto" >
+    insert into t_platform_partner (partner_name, partner_img,
       partner_invalid, partner_remark, partner_field_aa, 
-      created_date, created_user, update_date, 
-      updated_user)
-    values (#{partnerId,jdbcType=INTEGER}, #{partnerName,jdbcType=VARCHAR}, #{partnerImg,jdbcType=VARCHAR}, 
+      created_date, created_user)
+    values (#{partnerName,jdbcType=VARCHAR}, #{partnerImg,jdbcType=VARCHAR},
       #{partnerInvalid,jdbcType=CHAR}, #{partnerRemark,jdbcType=VARCHAR}, #{partnerFieldAa,jdbcType=VARCHAR}, 
-      #{createdDate,jdbcType=TIMESTAMP}, #{createdUser,jdbcType=VARCHAR}, #{updateDate,jdbcType=TIMESTAMP}, 
-      #{updatedUser,jdbcType=VARCHAR})
+      #{createdDate,jdbcType=TIMESTAMP}, #{createdUser,jdbcType=VARCHAR})
   </insert>
 
 
 
-  <insert id="insertSelective" parameterType="com.yaic.platform.partnerModule.entity.Partner" >
+  <insert id="insertSelective" parameterType="com.yaic.platform.entity.Partner" >
     insert into t_platform_partner
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="partnerId != null" >
@@ -152,14 +150,14 @@
 
 
 
-  <update id="updateByPrimaryKeySelective" parameterType="com.yaic.platform.partnerModule.entity.Partner" >
+  <update id="updateByPrimaryKeySelective" parameterType="com.yaic.platform.dto.PartnerModifyDto" >
     update t_platform_partner
     <set >
       <if test="partnerName != null and partnerName !=''" >
         partner_name = #{partnerName,jdbcType=VARCHAR},
       </if>
-      <if test="partnerImg != null and partnerImg != ''" >
-        partner_img = #{partnerImg,jdbcType=VARCHAR},
+      <if test="partnerImage != null and partnerImage != ''" >
+        partner_img = #{partnerImage,jdbcType=VARCHAR},
       </if>
       <if test="partnerInvalid != null and partnerInvalid != ''" >
         partner_invalid = #{partnerInvalid,jdbcType=CHAR},
@@ -169,12 +167,6 @@
       </if>
       <if test="partnerFieldAa != null and partnerFieldAa != ''" >
         partner_field_aa = #{partnerFieldAa,jdbcType=VARCHAR},
-      </if>
-      <if test="createdDate != null" >
-        created_date = #{createdDate,jdbcType=TIMESTAMP},
-      </if>
-      <if test="createdUser != null and createdUser != ''" >
-        created_user = #{createdUser,jdbcType=VARCHAR},
       </if>
       <if test="updateDate != null" >
         update_date = #{updateDate,jdbcType=TIMESTAMP},
@@ -188,7 +180,7 @@
 
 
 
-  <update id="updateByPrimaryKey" parameterType="com.yaic.platform.partnerModule.entity.Partner" >
+  <update id="updateByPrimaryKey" parameterType="com.yaic.platform.entity.Partner" >
     update t_platform_partner
     set partner_name = #{partnerName,jdbcType=VARCHAR},
       partner_img = #{partnerImg,jdbcType=VARCHAR},

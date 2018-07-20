@@ -170,6 +170,8 @@ function gotoTargetPage(btn){
 
 /** 列表搜索 */
 $('#selectInfo').on( 'click', function () {
+
+    // TODO partner模块列表搜索功能...
     var v= $("#mobile").val();
     console.log("v:"+v);
 
@@ -183,12 +185,14 @@ $('#selectInfo').on( 'click', function () {
 $("#deleteRow").click(function() {
 //	alert("dd");
     array = new Array();
+    imgPathArray = new Array();
     $("input[type='checkbox']:gt(0):checked").each(
         function() {
 
-            var partnerId = $(this).parent().parent().find("td").eq(9).html();
-//	    	array.push($(this).parent().next().text());
+            var partnerId = $(this).parent().parent().find("td").eq(11).html();
             array.push(partnerId);
+            var productImgPath = $(this).parent().parent().find("td").eq(3).html();
+            imgPathArray.push(productImgPath);
         }
     );
     if (array == 0) {	alert("请勾选!!");	}
@@ -197,7 +201,10 @@ $("#deleteRow").click(function() {
             $.ajax({
                 url:"/partner/deleteByIds",
                 type:"POST",
-                data:{"partnerIds":array.toString()},
+                data:{
+                    "ids":array.toString(),
+                    "partnerImageFilePath":imgPathArray.toString()
+                },
                 success:function(result){
                     layer.msg(result.resultMsg,{icon:1,time:2000});
                     loadList(itemNumPerPage, 1);
@@ -211,7 +218,6 @@ $("#deleteRow").click(function() {
 /** 合作方添加*/
 $("#addRow").on({ "click" : function(event){
         PartnerCommon.addPartner(event);
-        setTimeout('selectBoxInfo()',500);
     }
 });
 
@@ -227,7 +233,6 @@ $("#modifyRow").on({'click' : function(event){
         }
 
         PartnerCommon.modifyPartner(event, partnerId);
-        setTimeout('selectBoxInfo()',500);
 	}
 });
 
@@ -248,15 +253,15 @@ var columns = [
     /*0*/{"data": "partnerId", "title": columsName["selectAll"],"width":"2%"},
     /*1*/{"data": "partnerId", "title": columsName["number"],"width":"4%"},
     /*2*/{"data": "partnerName", "title": columsName["partnerName"],"width":"10%","sClass":"editClass"},
-    /*3*/{"data": "partnerImg", "title": columsName["partnerImg"],"width":"15%","sClass":"editClass"},
-    /*4*/{"data": "partnerRemark", "title": columsName["partnerRemark"],"width":"20%","sClass":"editClass"},
+    /*3*/{"data": "partnerImg", "title": columsName["partnerImg"],"width":"15%"},
+    /*4*/{"data": "partnerRemark", "title": columsName["partnerRemark"],"width":"15%","sClass":"editClass"},
     /*5*/{"data": "partnerInvalid", "title": columsName["validFlag"],"width":"4%","sClass":"editClass"},
-    /*6*/{"data": "createdDate", "title": columsName["createdDate"],"width":"3%","sClass":"hidden"},
-    /*7*/{"data": "createdUser", "title": columsName["createdUser"],"width":"7%"},
-    /*8*/{"data": "partnerId", "title": columsName["extn"],"width":"12%"},
-    /*9*/{"data": "partnerId", "title": columsName["ceshi"],"width":"3%","sClass":"hidden"},
-    /*10*/{"data": "updatedUser", "title": columsName["updatedUser"],"width":"3%","sClass":"hidden"},
-    /*11*/{"data": "updateDate", "title": columsName["updateDate"],"width":"3%","sClass":"hidden"}
+    /*6*/{"data": "createdUser", "title": columsName["createdUser"],"width":"5%"},
+    /*7*/{"data": "updatedUser", "title": columsName["updatedUser"],"width":"5%","sClass":"editClass"},
+    /*8*/{"data": "partnerId", "title": columsName["extn"],"width":"10%"},
+    /*9*/{"data": "createdDate", "title": columsName["createdDate"],"sClass":"hidden"},
+    /*10*/{"data": "updateDate", "title": columsName["updateDate"],"sClass":"hidden"},
+    /*11*/{"data": "partnerId", "title": columsName["ceshi"],"sClass":"hidden"}
 
 ];
 
@@ -277,7 +282,7 @@ var commonObj = {
             displayLength:itemNumPerPage,                       // 每页显示多少条记录
             ordering:false,                                      // 全局禁用排序
             columns:columns,
-            aoColumnDefs: [{ "bSortable": false, "aTargets": [0,1,2,3,4,5,6,7,8,9] },{ "visible": false}], // [{设置不允许排序的列},{隐藏排序图标}]
+            aoColumnDefs: [{ "bSortable": false, "aTargets": [0,1,2,3,4,5,6,7,8] },{ "visible": false}], // [{设置不允许排序的列},{隐藏排序图标}]
             data:data,
             dom: '<"H"rfl > t <"F"ip >',
             destroy: true,                                      //因为需要多次初始化，所以需要设置允许销毁实例
@@ -324,55 +329,50 @@ var commonObj = {
             var strOld = $(this).html();
             str = $(this).html()=="编辑"?"确定":"编辑";
             $(this).html(str);
+
             flag = !flag;
-            if(flag){
-                $(this).removeClass("blueBtn");
-            }else{
-                $(this).addClass("blueBtn");
-            }
+            flag ? $(this).removeClass("blueBtn") : $(this).addClass("blueBtn");
+
             var data = $(this).parent().siblings(".editClass");
             data.each(function(a,b){
-
                 var obj_text = $(this).find("input:text");
-                var obj_select = $(this).find("select");
-                var text_select = "<select class='tab_select'><option value='0'>是</option><option value='1'>否</option></select>";
-                //console.log(a,b)
-                obj_option = $(this).find("option:selected").html();
-                if(!obj_text.length && !obj_select.length){
-                    if($(this).text() === 'x' || $(this).text() === '√') {
-                        if($(this).text() === 'x'){
-                            $(this).html("<input class='tab_input' type='text' value='0'>");
-                        }else{
-                            $(this).html("<input class='tab_input' type='text' value='1'>");
-                        }
-                    }else{
-                        $(this).html("<input class='tab_input' type='text' value='" + $(this).text() + "'>");
-                    }
+                if(!obj_text.length){
+
+                    // 开启当前 td节点 的编辑状态
+                    change2EditStat(this);
                 }else{
-                    var modified_val = obj_text.val();
-                    if(modified_val === '0' || modified_val === '1'){
-                        var status_flag = obj_text.val();
-                        modified_val = status_flag === '0' ? '<font color="red" size="3">x</font>' : '<font size="3">√</font>';
-                        modified_val += '<input class="tab_input" type="hidden" value="'+ status_flag +'"/>';
 
-                    }
-                    $(this).html(modified_val);
+                    // 恢复当前 td节点 为展示状态
+                    change2ShowStat(this, obj_text);
                 }
-
-
 
             })
 
             if(strOld == '编辑'){
                 var currentId = $(this).attr("id");
             }else if(strOld == '确定'){
+
+                var tdNodes = $(this).parent().parent().find("td");
+
+                var partnerId = parseInt($.trim(tdNodes.eq(11).html()));
+                var partnerName = $.trim(tdNodes.eq(2).html());
+                var partnerRemark = $.trim(tdNodes.eq(4).html());
+                var partnerInvalid = $.trim(tdNodes.eq(5).children().eq(1).val());
+                var updatedUser = $.trim(tdNodes.eq(7).html());
+
+                if(isEmpty(partnerId) || isEmpty(partnerId) || isEmpty(partnerInvalid) || isEmpty(updatedUser)){
+                    layer.alert('请完善添加信息之后提交');
+                    return ;
+                }
+
                 RestfulClient.post("/partner/modifyPartnerInfo",
                     {
-                        "partnerId" : $.trim($(this).parent().parent().find("td").eq(9).html()),
-                        "partnerName" : $.trim($(this).parent().parent().find("td").eq(2).html()),
-                        "partnerImg" : $.trim($(this).parent().parent().find("td").eq(3).html()),
-                        "partnerInvalid": $.trim($(this).parent().parent().find("td").eq(5).children().eq(1).val()),
-						"test" : $("input[name='dataCheckBox']:checked:eq(0)").parent().parent().find("td").eq(2).html()
+                        "partnerId" : partnerId,
+                        "partnerName" : partnerName,
+                        "partnerRemark" : partnerRemark,
+                        "partnerInvalid": partnerInvalid,
+                        "updatedUser": updatedUser
+						//"test" : $("input[name='dataCheckBox']:checked:eq(0)").parent().parent().find("td").eq(2).html()
                     },
                     function(result) {
                         layer.msg(result.resultMsg,{icon:1,time:2000});
@@ -388,14 +388,18 @@ var commonObj = {
     deleteTab:function(){
         $(".table").on("click",".uDeleteBtn",function(){
             var that = $(this);
-            var id = $(this).parent().parent().find("td").eq(9).html();
+            var id = $(this).parent().parent().find("td").eq(11).html();
+            var imageFilePath = $(this).parent().parent().find("td").eq(3).html();
             var table = $('#tableId').DataTable();
             var dataTest = table.row( this ).data();
             layer.confirm('确定删除当前信息吗?', function(index){
                 $.ajax({
                     url:"/partner/deleteByIds",
                     type:"POST",
-                    data:{"partnerIds":id},
+                    data:{
+                        "ids":id,
+                        "partnerImageFilePath":imageFilePath
+                    },
                     success:function(result){
                         layer.msg(result.resultMsg,{icon:1,time:1000});
                         loadList(itemNumPerPage, 1);
@@ -435,13 +439,40 @@ var commonObj = {
 commonObj.init();
 
 
+function change2EditStat(ele){
+
+    // 启用编辑时显示 有效标识原始值
+    if($(ele).text() === 'x' || $(ele).text() === '√') {
+        if($(ele).text() === 'x'){
+            $(ele).html("<input class='tab_input' type='text' value='0'>");
+        }else{
+            $(ele).html("<input class='tab_input' type='text' value='1'>");
+        }
+    }else{
+        $(ele).html("<input class='tab_input' type='text' value='" + $(ele).text() + "'>");
+    }
+
+}
+
+function change2ShowStat(ele, obj_text) {
+    var modified_val = obj_text.val();
+
+    if(modified_val === '0' || modified_val === '1'){
+        var status_flag = obj_text.val();
+        modified_val = status_flag === '0' ? '<font color="red" size="3">x</font>' : '<font size="3">√</font>';
+        modified_val += '<input class="tab_input" type="hidden" value="'+ status_flag +'"/>';
+        $(ele).html(modified_val);
+    }else{
+        $(ele).html(modified_val);
+    }
+}
+
 function getModifyFormTemplate(){
-
-	var tdEles = $("input[name='dataCheckBox']:checked:eq(0)").parent().parent().find("td");
-
     //$("input[name='dataCheckBox']:checked:eq(0)").parent().parent().find("td").eq(2).html()
+    var tdEles = $("input[name='dataCheckBox']:checked:eq(0)").parent().parent().find("td");
+
     var modifyFromTemplate = "<div class='pd-30'>"+
-        "<form id='us'>"+
+        "<form id='partnerInfoModifyForm'>"+
         "<table class='table table-border  table-bg  '"+
         "style='border: 0 !important; border-collapse: separate;'"+
         "id='accountTable'>"+
@@ -457,16 +488,11 @@ function getModifyFormTemplate(){
         "</td>"+
         "</tr>"+
         "<tr>"+
-        "<td class='text-r' width='20%'"+
-        "style='text-align: right !important; padding: 8px; line-height: 20px; word-break: break-all;'>"+
-        "<font style='color: red'>*</font>合作方图片路径</td>"+
-        "<td width='55%'"+
-        "style='text-align: right !important; padding: 8px; line-height: 20px; word-break: break-all;'>"+
-        "<input name='partnerImg' id='partnerImg' class='input-text'"+
-        "type='text'"+
-        "value='" + tdEles.eq(3).html() +"'/>"+
-        "</td>"+
-        "<td width='23%'>&nbsp;</td>"+
+        "    <td class='text-r' width='20%' style='text-align: right !important; padding: 8px; line-height: 20px; word-break: break-all;'>" +
+        "        合作方详情图片</td>"+
+        "    <td width='55%' style='text-align: right !important; padding: 8px; line-height: 20px; word-break: break-all;'>"+
+        "        <input type='file' name='partnerImageFile' id='partnerImageFile'></td>"+
+        "    <td width='23%'>&nbsp;</td>"+
         "</tr>"+
         "<tr>"+
         "<td class='text-r' width='20%'"+
@@ -486,8 +512,8 @@ function getModifyFormTemplate(){
         "<font style='color: red'>*</font>备注</td>"+
         "<td width='55%'"+
         "style='text-align: left !important; padding: 5px; word-break: break-all;height: 160px'>"+
-		"<textarea name='partnerRemark' id='partnerRemark' style='width: 340px;height: 150px;border: 1px solid #ccc;' >" +
-		"" + tdEles.eq(4).html() + ""+
+        "<textarea name='partnerRemark' id='partnerRemark' style='width: 340px;height: 150px;border: 1px solid #ccc;' >" +
+        "" + tdEles.eq(4).html() + ""+
         "</textarea>" +
         "</td>"+
         "<td width='23%'>&nbsp;</td>"+
@@ -500,14 +526,15 @@ function getModifyFormTemplate(){
         "style='text-align: right !important; padding: 8px; line-height: 20px; word-break: break-all;'>"+
         "<input name='updatedUser' id='updatedUser' class='input-text'"+
         "type='text'"+
-        "value='" + tdEles.eq(10).html() +"'/>"+
+        "value='" + tdEles.eq(7).html() +"'/>"+
         "</td>"+
         "<td width='23%'>&nbsp;</td>"+
         "</tr>"+
         "</table>"+
-        "<input id='reqType' hidden='hidden' vale='${add}'>"+
+        "<input id='reqType' hidden='hidden' value='${add}'>"+
+        "<input id='partnerImage' name='partnerImage' hidden='hidden' value='"+ tdEles.eq(3).html() +"'/>"+
+        "<input id='partnerId' name='partnerId' hidden='hidden' value='"+ tdEles.eq(11).html() +"'/>"+
         "</form>";
-
 	return modifyFromTemplate;
 }
 
@@ -537,20 +564,21 @@ var PartnerCommon = function(){
                         layer.alert("您输入的账户代码含有非法字符，请重新录入");
                         return;
                     }
-                    RestfulClient.post("/partner/addPartnerInfo",
-                        {
-                            "partnerName" : $.trim(data.partnerName),
-                            "partnerInvalid" : $.trim(data.partnerInvalid),
-                            "partnerImg" : $.trim(data.partnerImg),
-                            "partnerRemark" : $.trim(data.partnerRemark),
-                            "createdUser" : $.trim(data.createdUser)
-                        },
-                        function(result) {
+
+                    var formData = new FormData(document.getElementById("partnerInfoAddForm"));
+                    $.ajax({
+                        url:"/partner/addPartnerInfo",
+                        async:false,
+                        type:"POST",
+                        data:formData,
+                        processData:false,
+                        contentType:false,
+                        success:function(result){
                             layer.alert(result.resultMsg);
                             layer.close(index);
                             loadList(itemNumPerPage, 1);
                         }
-                    );
+                    });
                 },
                 success : function(dom,index){
 
@@ -574,7 +602,6 @@ var PartnerCommon = function(){
                 btnAlign : 'c',
                 yes : function(index, dom){
                     var data = $("#us").formData();
-                    //alert(JSON.stringify(data));
                     var s = /^((?!<script>).)*$/;
                     if(data.partnerName==""||data.partnerImg==""||data.partnerInvalid==""||data.updatedUser==""){
                         layer.alert('请完善添加信息之后提交');//使用parent可以获得父页面DOM
@@ -583,21 +610,21 @@ var PartnerCommon = function(){
                         layer.alert("您输入的账户代码含有非法字符，请重新录入");
                         return;
                     }
-                    RestfulClient.post("/partner/modifyPartnerInfo",
-                        {
-                        	"partnerId" : parseInt($.trim(partnerId)),
-                            "partnerName" : $.trim(data.partnerName),
-                            "partnerInvalid" : $.trim(data.partnerInvalid),
-                            "partnerImg" : $.trim(data.partnerImg),
-                            "partnerRemark" : $.trim(data.partnerRemark),
-                            "updatedUser" : $.trim(data.updatedUser)
-                        },
-                        function(result) {
+
+                    var formData = new FormData(document.getElementById("partnerInfoModifyForm"));
+                    $.ajax({
+                        url:"/partner/modifyPartnerInfo",
+                        async:false,
+                        type:"POST",
+                        data:formData,
+                        processData:false,
+                        contentType:false,
+                        success:function(result){
                             layer.alert(result.resultMsg);
                             layer.close(index);
                             loadList(itemNumPerPage, parseInt($.trim($("#currentPageNo").val())));
                         }
-                    );
+                    });
                 },
                 success : function(dom,index){
 
@@ -611,26 +638,7 @@ var PartnerCommon = function(){
 }();
 
 
-function selectBoxInfo(){
-    RestfulClient.post("/source/listAll", {},
-        function(result) {
-            data = result.dataList;
-            for(var i in data){
-                $("#selectBox").append("<option value='"+data[i].dataSourceId+"'>'"+data[i].sourceName+"'</option>");
-            }
-        }
-    );
-}
 
-function genAppId(){
-//	alert("genAppid");
-    RestfulClient.post("/authconfig/getNewAppid", {},
-        function(result) {
-            data = result.data;
-            $("#appId").val(data);
-        }
-    );
-}
 $(".table_box").delegate('#tableId tr', 'click', function () {
     var nTds = $("td",this);
     var sBrowser = $(nTds[11]).text();//获取第一列的值，其中第一列为隐藏列
@@ -639,7 +647,7 @@ $(".table_box").delegate('#tableId tr', 'click', function () {
 
 
 var addFromTemplate = "<div class='pd-30'>"+
-    "<form id='us'>"+
+    "<form id='partnerInfoAddForm'>"+
     "<table class='table table-border  table-bg  '"+
     "style='border: 0 !important; border-collapse: separate;'"+
     "id='accountTable'>"+
@@ -654,16 +662,13 @@ var addFromTemplate = "<div class='pd-30'>"+
     "</td>"+
     "</tr>"+
     "<tr>"+
-    "<td class='text-r' width='20%'"+
-    "style='text-align: right !important; padding: 8px; line-height: 20px; word-break: break-all;'>"+
-    "<font style='color: red'>*</font>合作方图片路径</td>"+
-    "<td width='55%'"+
-    "style='text-align: right !important; padding: 8px; line-height: 20px; word-break: break-all;'>"+
-    "<input name='partnerImg' id='partnerImg' class='input-text'"+
-    "type='text' />"+
-    "</td>"+
-    "<td width='23%'>&nbsp;</td>"+
+    "    <td class='text-r' width='20%' style='text-align: right !important; padding: 8px; line-height: 20px; word-break: break-all;'>" +
+    "        <font style='color: red'>*</font>合作方详情图片</td>"+
+    "    <td width='55%' style='text-align: right !important; padding: 8px; line-height: 20px; word-break: break-all;'>"+
+    "        <input type='file' name='partnerImageFile' id='partnerImageFile'></td>"+
+    "    <td width='23%'>&nbsp;</td>"+
     "</tr>"+
+
     "<tr>"+
     "<td class='text-r' width='20%'"+
     "style='text-align: right !important; padding: 8px; line-height: 20px; word-break: break-all;'>"+
@@ -700,8 +705,4 @@ var addFromTemplate = "<div class='pd-30'>"+
     "</table>"+
     "<input id='reqType' hidden='hidden' vale='${add}'>"+
     "</form>";
-
-
-
-
 

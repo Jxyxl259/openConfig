@@ -9,10 +9,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @EnableSwagger2
 @ServletComponentScan
 @SpringBootApplication		//启动标志
-@MapperScan(basePackages={
-		"com.yaic.platform.userModule.dao",
-		"com.yaic.platform.partnerModule.dao",
-		"com.yaic.platform.productModule.dao"})		//mybatis reload xml
+@MapperScan(basePackages={"com.yaic.*.dao"})		//mybatis reload xml
 public class Run{
 
 	/**

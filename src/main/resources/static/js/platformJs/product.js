@@ -199,7 +199,7 @@ $("#deleteRow").click(function() {
                 url:"/product/deleteByIds",
                 type:"POST",
                 data:{
-                    "productIds":idsArray.toString(),
+                    "ids":idsArray.toString(),
                     "productImgsPath":imgPathArray.toString()
                 },
                 success:function(result){
@@ -230,7 +230,6 @@ $("#modifyRow").on({'click' : function(event){
         }
 
         ProductCommon.modifyProduct(event, productId);
-        setTimeout('selectBoxInfo()',500);
     }
 });
 
@@ -447,7 +446,7 @@ var commonObj = {
                 $.ajax({
                     url:"/product/deleteByIds",
                     type:"POST",
-                    data:{"productIds":id},
+                    data:{"ids":id},
                     success:function(result){
                         layer.msg(result.resultMsg,{icon:1,time:1000});
                         loadList(itemNumPerPage, 1);
@@ -573,7 +572,7 @@ function getModifyFormTemplate(){
     var modifyFromTemplate = ""+
 
     "<div class='pd-30'>"+
-    "<form id='us'>"+
+    "<form id='productInfoModifyForm'>"+
     "<table class='table table-border  table-bg  ' style='border: 0 !important; border-collapse: separate;' id='accountTable'>"+
         "<tr>"+
             "<td class='text-r' width='20%' style='text-align: right !important; padding: 8px; line-height: 20px; word-break: break-all;'>"+
@@ -618,6 +617,13 @@ function getModifyFormTemplate(){
             "<td width='10%'>&nbsp;</td>"+
         "</tr>"+
         "<tr>"+
+        "    <td class='text-r' width='20%' style='text-align: right !important; padding: 8px; line-height: 20px; word-break: break-all;'>" +
+        "        产品图片</td>"+
+        "    <td width='55%' style='text-align: right !important; padding: 8px; line-height: 20px; word-break: break-all;'>"+
+        "        <input type='file' name='productImageFile' id='productImageFile'></td>"+
+        "    <td width='23%'>&nbsp;</td>"+
+        "</tr>"+
+        "<tr>"+
             "<td class='text-r' width='20%' style='text-align: right !important; padding: 8px; line-height: 20px; word-break: break-all;'>"+
                 "<font style='color: red'>*</font>更新人</td>"+
             "<td width='55%' style='text-align: right !important; padding: 8px; line-height: 20px; word-break: break-all;'>"+
@@ -626,8 +632,9 @@ function getModifyFormTemplate(){
             "<td width='10%'>&nbsp;</td>"+
         "</tr>"+
     "</table>"+
-
     "<input id='reqType' hidden='hidden' value='${add}'>"+
+    "<input id='productId' name='productId' hidden='hidden' value='"+ tdEles.eq(11).html() +"'/>"+
+    "<input id='productImage' name='productImage' hidden='hidden' value='"+ tdEles.eq(3).html() +"'/>"+
     "</form>";
 
     return modifyFromTemplate;
@@ -667,22 +674,21 @@ var ProductCommon = function(){
                         layer.alert('请完善添加信息之后提交');//使用parent可以获得父页面DOM
                         return ;
                     }
-                    RestfulClient.post("/product/modifyProductInfo",
-                        {
-                            "productId" : parseInt($.trim(productId)),
-                            "productDivHtml" : $.trim(data.productDivHtml),
-                            "productName" : $.trim(data.productName),
-                            "productInvalid" : $.trim(data.productInvalid),
-                            "productRemark" : $.trim(data.productRemark),
-                            "updatedUser" : $.trim(data.updatedUser),
-                            "productTxt" : $.trim(data.productTxt)
-                        },
-                        function(result) {
+
+                    var formData = new FormData(document.getElementById("productInfoModifyForm"));
+                    $.ajax({
+                        url:"/product/modifyProductInfo",
+                        async:false,
+                        type:"POST",
+                        data:formData,
+                        processData:false,
+                        contentType:false,
+                        success:function(result){
                             layer.alert(result.resultMsg);
                             layer.close(index);
                             loadList(itemNumPerPage, parseInt($.trim($("#currentPageNo").val())));
                         }
-                    );
+                    });
                 },
                 success : function(dom,index){
 
@@ -694,37 +700,3 @@ var ProductCommon = function(){
         }
     }
 }();
-
-
-// function selectBoxInfo(){
-//     RestfulClient.post("/source/listAll", {},
-//         function(result) {
-//             data = result.dataList;
-//             for(var i in data){
-//                 $("#selectBox").append("<option value='"+data[i].dataSourceId+"'>'"+data[i].sourceName+"'</option>");
-//             }
-//         }
-//     );
-// }
-
-function genAppId(){
-//	alert("genAppid");
-    RestfulClient.post("/authconfig/getNewAppid", {},
-        function(result) {
-            data = result.data;
-            $("#appId").val(data);
-        }
-    );
-}
-$(".table_box").delegate('#tableId tr', 'click', function () {
-    var nTds = $("td",this);
-    var sBrowser = $(nTds[11]).text();//获取第一列的值，其中第一列为隐藏列
-});
-
-function isEmpty(obj){
-    if(typeof obj == "undefined" || obj == null || obj == ""){
-        return true;
-    }else{
-        return false;
-    }
-}
