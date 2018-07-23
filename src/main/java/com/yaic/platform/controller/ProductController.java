@@ -127,7 +127,7 @@ public class ProductController {
 			method = RequestMethod.POST,
 			consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public ResultMessage<Integer> modifyProductInfo(@Valid ProductModifyDto productModifyDtoModule,
-	                                       @RequestParam("productImageFile") @ApiParam(name ="productImageFile", value = "产品图片",required = false)MultipartFile productImageFile,
+	                                       @RequestParam(value = "productImageFile", required = false) @ApiParam(name ="productImageFile", value = "产品图片",required = false)MultipartFile productImageFile,
 	                                       BindingResult bindingResult){
 		log.debug("modifyProductInfo param:{}", productModifyDtoModule);
 
@@ -148,6 +148,23 @@ public class ProductController {
 
 		log.debug("modifyProductInfo result:{}", result);
 		return result;
+	}
+
+	/**
+	 * 产品信息行内编辑
+	 * @param productModifyDtoModule
+	 * @param bindingResult
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	@ApiOperation(value="产品信息行内编辑", notes="产品信息行内编辑")
+	@RequestMapping(
+			value = "/editProductInfo",
+			method = RequestMethod.POST,
+			consumes = MediaType.APPLICATION_JSON_VALUE)
+	public ResultMessage<Integer> editProductInfo(@RequestBody @Valid ProductModifyDto productModifyDtoModule,
+	                                                BindingResult bindingResult){
+		return modifyProductInfo(productModifyDtoModule, null, bindingResult);
 	}
 
 

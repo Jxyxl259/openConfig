@@ -189,7 +189,7 @@ $("#deleteRow").click(function() {
         layer.confirm('确定删除选中行信息吗?', function(index){
             $.ajax({
                 url:"/userAccount/deleteByIds",
-                type:"POST",
+                type:"GET",
                 data:{"accountIds":array.toString()},
                 success:function(result){
                     layer.msg(result.resultMsg,{icon:1,time:2000});
@@ -368,7 +368,7 @@ var commonObj = {
             layer.confirm('确定删除当前信息吗?', function(index){
                 $.ajax({
                     url:"/userAccount/deleteByIds",
-                    type:"POST",
+                    type:"GET",
                     data:{"accountIds":id},
                     success:function(result){
                         layer.msg(result.resultMsg,{icon:1,time:1000});

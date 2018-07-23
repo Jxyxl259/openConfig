@@ -116,7 +116,7 @@ public class PartnerController extends BaseController {
 			method = RequestMethod.POST,
 			consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public ResultMessage<Integer> modifyPartnerInfo(@Valid PartnerModifyDto partnerModifyDto,
-	                                                @RequestParam("partnerImageFile") @ApiParam(name ="partnerImageFile", value = "合作方图片",required = false) MultipartFile partnerImageFile,
+	                                                @RequestParam(value = "partnerImageFile", required = false) @ApiParam(name ="partnerImageFile", value = "合作方图片",required = false) MultipartFile partnerImageFile,
 	                                                BindingResult bindingResult){
 		log.debug("modifyPartnerInfo param:{}", JSON.toJSONString(partnerModifyDto));
 
@@ -136,6 +136,23 @@ public class PartnerController extends BaseController {
 
 		log.debug("modifyPartnerInfo result:{}", result);
 		return result;
+	}
+
+	/**
+	 * 第三方合作商信息修改(行内编辑)
+	 * @param partnerModifyDto
+	 * @param bindingResult
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	@ApiOperation(value = "第三方合作商信息行内编辑", notes = "第三方合作商信息行内编辑")
+	@RequestMapping(
+			value = "/editPartnerInfo",
+			method = RequestMethod.POST,
+			consumes = MediaType.APPLICATION_JSON_VALUE)
+	public ResultMessage<Integer> editPartnerInfo(@RequestBody @Valid PartnerModifyDto partnerModifyDto,
+	                                                BindingResult bindingResult){
+		return modifyPartnerInfo(partnerModifyDto, null, bindingResult);
 	}
 
 

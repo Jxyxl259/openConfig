@@ -200,7 +200,7 @@ $("#deleteRow").click(function() {
                 type:"POST",
                 data:{
                     "ids":idsArray.toString(),
-                    "productImgsPath":imgPathArray.toString()
+                    "productImageFilePath":imgPathArray.toString()
                 },
                 success:function(result){
                     layer.msg(result.resultMsg,{icon:1,time:2000});
@@ -411,7 +411,7 @@ var commonObj = {
                     return ;
                 }
 
-                RestfulClient.post("/product/modifyProductInfo",
+                RestfulClient.post("/product/editProductInfo",
                     {
                         "productId" : productId,
                         "productName" : productName,
@@ -440,13 +440,17 @@ var commonObj = {
         $(".table").on("click",".uDeleteBtn",function(){
             var that = $(this);
             var id = $(this).parent().parent().find("td").eq(11).html();
+            var imagePath = $(this).parent().parent().find("td").eq(3).html();
             var table = $('#tableId').DataTable();
             var dataTest = table.row( this ).data();
             layer.confirm('确定删除当前信息吗?', function(index){
                 $.ajax({
                     url:"/product/deleteByIds",
                     type:"POST",
-                    data:{"ids":id},
+                    data:{
+                        "ids":id,
+                        "productImageFilePath":imagePath
+                    },
                     success:function(result){
                         layer.msg(result.resultMsg,{icon:1,time:1000});
                         loadList(itemNumPerPage, 1);

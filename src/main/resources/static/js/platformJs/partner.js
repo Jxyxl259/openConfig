@@ -365,7 +365,7 @@ var commonObj = {
                     return ;
                 }
 
-                RestfulClient.post("/partner/modifyPartnerInfo",
+                RestfulClient.post("/partner/editPartnerInfo",
                     {
                         "partnerId" : partnerId,
                         "partnerName" : partnerName,
