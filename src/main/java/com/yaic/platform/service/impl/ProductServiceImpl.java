@@ -1,163 +1,160 @@
 package com.yaic.platform.service.impl;
 
-import com.alibaba.fastjson.JSON;
-import com.yaic.common.GlobalMessageEnum;
-import com.yaic.platform.common.ImgUploadConstant;
-import com.yaic.platform.common.ResultMessage;
-import com.yaic.platform.dao.ProductDao;
-import com.yaic.platform.dto.ProductAddDto;
-import com.yaic.platform.dto.ProductDeleteDto;
-import com.yaic.platform.dto.ProductListDto;
-import com.yaic.platform.dto.ProductModifyDto;
-import com.yaic.platform.entity.Product;
-import com.yaic.platform.service.ProductService;
-import org.apache.commons.beanutils.ConvertUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.util.FileCopyUtils;
-import org.springframework.web.multipart.MultipartFile;
-
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
-import static com.yaic.common.CommonConstant.PRODUCT_MODULE;
-import static com.yaic.common.GlobalMessageEnum.DATABASE_INTERACTIVE_FAILED;
-import static com.yaic.common.GlobalMessageEnum.FILE_UPLOAD_FAILURE;
-import static com.yaic.platform.common.BaseController.getResults;
-import static com.yaic.platform.common.PublicMethods.delProductImg;
+import org.apache.commons.beanutils.ConvertUtils;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.yaic.common.GlobalMessageEnum;
+import com.yaic.platform.common.ReturnMsg;
+import com.yaic.platform.dao.ProductDao;
+import com.yaic.platform.dto.ProductDto;
+import com.yaic.platform.entity.Product;
+import com.yaic.platform.service.ProductService;
+import com.yaic.platform.utils.BeanCopyUtils;
+import com.yaic.platform.utils.ImageUtils;
 
 @Service
 public class ProductServiceImpl implements ProductService {
 
-	private static Logger log = LoggerFactory.getLogger(ProductServiceImpl.class);
+	private static Logger logger = LoggerFactory.getLogger(ProductServiceImpl.class);
+	
+	@Value("${imgUploadConfig.product-image-file}")
+	private String productImageFilePath;
 
 	@Autowired
 	private ProductDao productDao;
 
-	@Autowired
-	private ImgUploadConstant fileUploadPath;
-
 	@Override
-	public List<Product> getList(ProductListDto productListDto) {
-		log.debug("Query ProductList Param={}", JSON.toJSONString(productListDto));
-		List<Product> productList = productDao.selectList(productListDto);
-		log.debug("Query ProductList Result={}", JSON.toJSONString(productList));
-		return productList;
+	public List<Product> getList(ProductDto productDto) {
+		// 数据获取
+		Product product = new Product();
+		BeanCopyUtils.beanCopy(productDto, product);
+		return productDao.selectList(product);
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
-	public ResultMessage<Integer> deleteProductInfo(ProductDeleteDto deleteDto) {
-		ResultMessage<Integer> result = new ResultMessage<>(GlobalMessageEnum.SUCCESS);
-		String productIds = deleteDto.getIds();
-		String productImageFilePath = deleteDto.getProductImageFilePath();
-		log.debug("Delete ProductInfo Ids={}, productImagePath={}", productIds, productImageFilePath);
-
-		// 根据图片路径删除产品图片
-		delProductImg(productImageFilePath);
-
-		int[] ids = (int[]) ConvertUtils.convert(productIds.split(","),int.class);
-
-		int affectedRows = productDao.deleteByIds(ids);
-
-		if(ids.length != affectedRows){
-			return result.resetResultMessage(DATABASE_INTERACTIVE_FAILED);
+	public ReturnMsg deleteByIds(String deleteIds) {
+		ReturnMsg result = new ReturnMsg();
+		if (deleteIds.length() < 1) {
+			result.setSuccess(false);
+			result.setMessage(GlobalMessageEnum.PARAM_IS_NULL.getMsg());
+			result.setCode(GlobalMessageEnum.PARAM_IS_NULL.getCode());
+			return result;
 		}
-
-		result.setT(affectedRows);
-		log.debug("Delete PartnerInfo affectedRows={}", affectedRows);
-		return result;
-	}
-
-
-	@Override
-	@SuppressWarnings("unchecked")
-	public ResultMessage<Integer> modifyPartnerInfoByPartnerId(ProductModifyDto productModifyDto, MultipartFile productImageFile) {
-		ResultMessage<Integer> result = new ResultMessage<>(GlobalMessageEnum.SUCCESS);
-		log.debug("Update ProductInfo Param:{}", JSON.toJSONString(productModifyDto));
-
-		String imgPathNew="";
-		if(productImageFile != null){
-			String imgPath = productModifyDto.getProductImage();
-			String partnerName = productModifyDto.getProductName();
-			imgPathNew = updateProductImg(imgPath, productImageFile, partnerName);
+		String[] ids = deleteIds.split(",");
+		int[] intIds = (int[]) ConvertUtils.convert(ids,int.class);
+		
+		List<Product> lists = productDao.selectListByKeys(intIds);
+		if (intIds.length != lists.size()) {
+			logger.error("that's size is not equals query's length, so this delete is failure !!!");
+			result.setSuccess(false);
+			result.setMessage(GlobalMessageEnum.DELETE_OPERATION_6001.getMsg());
+			result.setCode(GlobalMessageEnum.DELETE_OPERATION_6001.getCode());
+			return result;
 		}
+		
+		productDao.deleteByIds(intIds);
 
-		productModifyDto.setUpdateDate(new Date());
-		productModifyDto.setProductImage(imgPathNew);
-		int affectRows = productDao.updateByPrimaryKeySelective(productModifyDto);
-
-		if(1 != affectRows){
-			delProductImg(imgPathNew);
-			return result.resetResultMessage(GlobalMessageEnum.DATABASE_INTERACTIVE_FAILED);
-		}
-
-		result.setT(affectRows);
-		return result;
-	}
-
-
-	/**
-	 * 更新合作方图片
-	 * @param productImagePathBeforeModified 产品图片路径（修改前）
-	 * @param productImageFile 产品图片（新）
-	 * @param productName 产品名称（新）
-	 * @return imageAbsolutePath 合作方图片路径（新）
-	 */
-	private String updateProductImg(String productImagePathBeforeModified, MultipartFile productImageFile, String productName) {
-		delProductImg(productImagePathBeforeModified);
-
-		String originalFilename = productImageFile.getOriginalFilename();
-		String imageAbsolutePath = fileUploadPath.getUploadFileAbsolutePath(originalFilename, productName, PRODUCT_MODULE);
-
-		try {
-			FileOutputStream fos = new FileOutputStream(new File(imageAbsolutePath));
-			FileCopyUtils.copy(productImageFile.getInputStream(), fos);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return imageAbsolutePath;
-	}
-	@Override
-	@SuppressWarnings("unchecked")
-	public ResultMessage<Integer> addProductInfo(ProductAddDto productAddDto, MultipartFile productImageFile) {
-		ResultMessage result = new ResultMessage(GlobalMessageEnum.SUCCESS);
-		log.debug("Add ProductInfo Param:{}", JSON.toJSONString(productAddDto));
-
-		// 将文件上传到指定的路径
-		String originalFilename = productImageFile.getOriginalFilename();
-		String productName = productAddDto.getProductName();
-		String uploadFileAbsolutePath = fileUploadPath.getUploadFileAbsolutePath(originalFilename, productName, PRODUCT_MODULE);
-
-		int afectRows = -1;
-		try {
-			FileOutputStream fos = new FileOutputStream(new File(uploadFileAbsolutePath));
-			FileCopyUtils.copy(productImageFile.getInputStream(), fos);
-
-			productAddDto.setCreatedDate(new Date());
-			productAddDto.setProductImg(uploadFileAbsolutePath);
-
-			// 数据入库
-			afectRows = productDao.insertSelective(productAddDto);
-			if(afectRows != 1){
-				log.error("Insert Into DateBase Failure !!!");
-				return getResults(DATABASE_INTERACTIVE_FAILED);
+		//删除对应图片资源
+		for (Product product : lists) {
+			String image = product.getProductImg();
+			if (StringUtils.isNotBlank(image)) {
+				ImageUtils.deleteImageByPath(productImageFilePath+File.separator+image);
 			}
-			result.setT(afectRows);
-		} catch (IOException e) {
-			log.error("File Upload Failure!!! Reason={}", e.getCause());
-			e.printStackTrace();
-			return result.resetResultMessage(FILE_UPLOAD_FAILURE);
 		}
-
-		log.debug("Add ProductInfo affectedRows:{}", afectRows);
+		
+		result.setSuccess(true);
+		result.setMessage(GlobalMessageEnum.SYS_CODE_200.getMsg());
+		result.setCode(GlobalMessageEnum.SYS_CODE_200.getCode());
 		return result;
 	}
+
+	@Override
+	public ReturnMsg updateProductInfo(ProductDto productDto, MultipartFile productImageFile) {
+		ReturnMsg result = new ReturnMsg();
+		try {
+			String fileName = null;
+			if (productImageFile != null) {
+				fileName = ImageUtils.fileCopy(productImageFile, productImageFilePath);
+				if (StringUtils.isEmpty(fileName)) { //这里直接返回null或者文件名称
+					result.setSuccess(false);
+					result.setMessage(GlobalMessageEnum.FILE_UPLOAD_FAILURE.getMsg());
+					result.setCode(GlobalMessageEnum.FILE_UPLOAD_FAILURE.getCode());
+					return result;
+				}
+			}
+			
+			// 数据入库
+			Product product = new Product();
+			BeanCopyUtils.beanCopy(productDto, product);
+			product.setUpdateDate(new Date());
+			product.setProductImg(fileName);
+			
+			productDao.updateByPrimaryKeySelective(product);
+			
+			result.setSuccess(true);
+			result.setMessage(GlobalMessageEnum.SYS_CODE_200.getMsg());
+			result.setCode(GlobalMessageEnum.SYS_CODE_200.getCode());
+		} catch (Exception e) {
+			logger.error("Exception Failure!!! Reason={}", e.getCause());
+			result.setSuccess(false);
+			result.setMessage(GlobalMessageEnum.SYS_CODE_500.getMsg());
+			result.setCode(GlobalMessageEnum.SYS_CODE_500.getCode());
+		}
+		return result;
+	}
+
+	@Override
+	public ReturnMsg addProductInfo(ProductDto productDto, MultipartFile productImageFile) {
+		ReturnMsg result = new ReturnMsg(true);
+		result.setMessage(GlobalMessageEnum.SYS_CODE_200.getMsg());
+		result.setCode(GlobalMessageEnum.SYS_CODE_200.getCode());
+		
+		int affectRows = -1;
+		try {
+			
+			String fileName = ImageUtils.fileCopy(productImageFile, productImageFilePath);
+			if (StringUtils.isEmpty(fileName)) { //这里直接返回null或者文件名称
+				result.setSuccess(false);
+				result.setMessage(GlobalMessageEnum.FILE_UPLOAD_FAILURE.getMsg());
+				result.setCode(GlobalMessageEnum.FILE_UPLOAD_FAILURE.getCode());
+				return result;
+			}
+			
+			// 数据入库
+			Product product = new Product();
+			BeanCopyUtils.beanCopy(productDto, product);
+			product.setCreatedDate(new Date());
+			product.setProductImg(fileName);
+			
+			affectRows = productDao.insertSelective(product);
+			
+			if(affectRows != 1){
+				logger.error("Insert Into DateBase Failure !!!");
+				ImageUtils.deleteImageByPath(ImageUtils.getUploadFileAbsolutePath(fileName, productImageFilePath));
+				result.setSuccess(false);
+				result.setMessage(GlobalMessageEnum.DATABASE_INTERACTIVE_FAILED.getMsg());
+				result.setCode(GlobalMessageEnum.DATABASE_INTERACTIVE_FAILED.getCode());
+			}
+		} catch (Exception e) {
+			logger.error("Exception Failure!!! Reason={}", e.getCause());
+			result.setSuccess(false);
+			result.setMessage(GlobalMessageEnum.SYS_CODE_500.getMsg());
+			result.setCode(GlobalMessageEnum.SYS_CODE_500.getCode());
+			
+		}
+		return result;
+	}
+
 
 
 }

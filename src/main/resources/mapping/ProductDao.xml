@@ -55,7 +55,7 @@
   </select>
 
 
-  <select id="selectList" parameterType="com.yaic.platform.dto.ProductListDto" resultMap="ResultMapWithBLOBs">
+  <select id="selectList" parameterType="com.yaic.platform.entity.Product" resultMap="ResultMapWithBLOBs">
       select
       <include refid="Base_Column_List"/>
       ,
@@ -73,6 +73,16 @@
         </if>
       </trim>
       order by created_date desc
+  </select>
+
+<select id="selectListByKeys" parameterType="java.util.List" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from t_platform_product
+    where product_id in
+    <foreach collection="array" item="id" open="(" close=")" separator=",">
+      #{id,jdbcType=INTEGER}
+    </foreach>
   </select>
 
 
@@ -102,7 +112,7 @@
       #{updateDate,jdbcType=TIMESTAMP}, #{updatedUser,jdbcType=VARCHAR}, #{productTxt,jdbcType=LONGVARCHAR}
       )
   </insert>
-  <insert id="insertSelective" parameterType="com.yaic.platform.dto.ProductAddDto" >
+  <insert id="insertSelective" parameterType="com.yaic.platform.entity.Product" >
     insert into t_platform_product
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="productId != null" >
@@ -183,7 +193,7 @@
   </insert>
 
 
-  <update id="updateByPrimaryKeySelective" parameterType="com.yaic.platform.dto.ProductModifyDto" >
+  <update id="updateByPrimaryKeySelective" parameterType="com.yaic.platform.entity.Product" >
     update t_platform_product
     <set >
       <if test="productName != null and productName != ''" >

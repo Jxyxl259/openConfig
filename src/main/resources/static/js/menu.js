@@ -2,9 +2,9 @@ $(function(){
 	var menuArr = [
 	{"id":1,"firstMenu":"平台管理","pic":"&#xe616;",
 	"child": [
-		{ "id": "1","secMenu": "合作伙伴管理","href":"openBgHtml/platformHtml/partnerModule/partner.html"},
-		{ "id": "2","secMenu": "产品管理","href":"openBgHtml/platformHtml/productModule/product.html" },
-		{ "id": "3","secMenu": "第三方用户管理","href":"openBgHtml/platformHtml/userModule/thirdUser.html" }
+		{ "id": "1","secMenu": "合作伙伴管理","href":"html/platform/partner.html"},
+		{ "id": "2","secMenu": "产品管理","href":"html/platform/product.html" },
+		{ "id": "3","secMenu": "第三方用户管理","href":"html/platform/thirdUser.html" }
 		]
 	},
 	{"id":2,"firstMenu":"系统管理","pic":"&#xe613;",
@@ -42,6 +42,8 @@ $(function(){
 					that.parent().addClass("menu_li");
 					that.parent().siblings().removeClass("menu_li"); 
 					snsObj.navTopFn(pId,menuTitle);
+				var navStr = '<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> '+pId+' <span class="c-gray en">&gt;</span> '+menuTitle+' </nav>'
+					$(".Hui_nav").empty().append(navStr);
 		    })
 			
 		},

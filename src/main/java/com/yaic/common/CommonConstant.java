@@ -13,16 +13,6 @@ public class CommonConstant {
 	 */
 	public static final Integer NO_PAGENATION = 0;
 
-	/**
-	 * 从操作系统属性中获取操作系统标识的key
-	 */
-	public static final String OS_NAME = "os.name";
-
-	/**
-	 * windows环境
-	 */
-	public static final String WIN = "windows";
-
 
 	/**
 	 * 合作伙伴模块

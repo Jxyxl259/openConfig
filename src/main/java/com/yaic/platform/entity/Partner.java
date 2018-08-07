@@ -1,16 +1,9 @@
 package com.yaic.platform.entity;
 
-import com.yaic.platform.common.BaseDto;
-import io.swagger.annotations.ApiModel;
-import org.hibernate.validator.constraints.NotBlank;
-
 import java.util.Date;
 
-/**
- * 合作商
- */
-@ApiModel(value = "partner", description = "合作商POJO")
-public class Partner extends BaseDto {
+/** 合作商*/
+public class Partner{
 
     /** 主键*/
     private Integer partnerId;

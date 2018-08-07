@@ -43,10 +43,10 @@
       <if test="email != null and email != ''" >
         and email = #{email,jdbcType=VARCHAR}
       </if>
-      <if test="authFlag != null" >
+      <if test="authFlag != null and authFlag != ''" >
         and auth_flag = #{authFlag,jdbcType=CHAR}
       </if>
-      <if test="validFlag != null" >
+      <if test="validFlag != null and validFlag != ''" >
         and valid_flag = #{validFlag,jdbcType=CHAR}
       </if>
     </trim>

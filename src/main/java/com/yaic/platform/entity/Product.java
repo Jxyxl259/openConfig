@@ -1,10 +1,8 @@
 package com.yaic.platform.entity;
 
-import com.yaic.platform.common.BaseDto;
-
 import java.util.Date;
 
-public class Product extends BaseDto {
+public class Product{
     /**
      * 产品ID
      */
@@ -65,49 +63,30 @@ public class Product extends BaseDto {
      */
     private String productTxt;
 
-    public Product(int pageSize, int pageNum, String productName, String createdUser, String productInvalid){
-        super.setPageSize(pageSize);
-        super.setPageNum(pageNum);
-        this.productName = productName;
-        this.createdUser = createdUser;
-        this.productInvalid = productInvalid;
-    }
-
-    public Product(Integer productId, String productName, String productImg, String productInvalid, String productRemark, String productDivHtml, String productFiledAa, Date createdDate, String createdUser, Date updateDate, String updatedUser) {
-        this.productId = productId;
-        this.productName = productName;
-        this.productImg = productImg;
-        this.productInvalid = productInvalid;
-        this.productRemark = productRemark;
-        this.productDivHtml = productDivHtml;
-        this.productFiledAa = productFiledAa;
-        this.createdDate = createdDate;
-        this.createdUser = createdUser;
-        this.updateDate = updateDate;
-        this.updatedUser = updatedUser;
-        //this.productTxt = productTxt;
-    }
-
-    public Product(Integer productId, String productName, String productImg, String productInvalid, String productRemark, String productDivHtml, String productFiledAa, Date createdDate, String createdUser, Date updateDate, String updatedUser, String productTxt) {
-        this.productId = productId;
-        this.productName = productName;
-        this.productImg = productImg;
-        this.productInvalid = productInvalid;
-        this.productRemark = productRemark;
-        this.productDivHtml = productDivHtml;
-        this.productFiledAa = productFiledAa;
-        this.createdDate = createdDate;
-        this.createdUser = createdUser;
-        this.updateDate = updateDate;
-        this.updatedUser = updatedUser;
-        this.productTxt = productTxt;
-    }
 
     public Product() {
         super();
     }
+    
+    public Product(Integer productId, String productName, String productImg, String productInvalid,
+			String productRemark, String productDivHtml, String productFiledAa, Date createdDate, String createdUser,
+			Date updateDate, String updatedUser, String productTxt) {
+		super();
+		this.productId = productId;
+		this.productName = productName;
+		this.productImg = productImg;
+		this.productInvalid = productInvalid;
+		this.productRemark = productRemark;
+		this.productDivHtml = productDivHtml;
+		this.productFiledAa = productFiledAa;
+		this.createdDate = createdDate;
+		this.createdUser = createdUser;
+		this.updateDate = updateDate;
+		this.updatedUser = updatedUser;
+		this.productTxt = productTxt;
+	}
 
-    public Integer getProductId() {
+	public Integer getProductId() {
         return productId;
     }
 

@@ -1,74 +1,8 @@
 // 合作方 js
 var flag = true;
 var data;
-var itemNumPerPage;
-var currentPage;
 var currentTrContent;
 var tr_ele;
-
-$.fn.formData = function() {
-    var o = {};
-    var a = $("#us").serializeArray();
-    $.each(a, function() {
-        if (o[this.name]) {
-            if (!o[this.name].push) {
-                o[this.name] = [o[this.name]];
-            }
-            o[this.name].push(this.value || '');
-        } else {
-            o[this.name] = this.value || '';
-        }
-    });
-    return o;
-};
-
-
-
-$(function() {
-    // 数据初始化
-    itemNumPerPage = parseInt($.trim($("#pageSizeVal").val()));
-    currentPage = parseInt($.trim($("#currentPageNo").val()));
-    loadList(itemNumPerPage,currentPage);
-});
-
-
-/** 全选、反选 */
-function checkAll(ele){
-    //全选反选
-    if (ele.checked){
-        //alert("全选");
-        $("input[name='dataCheckBox']:checkbox").each(function(){
-            $(this).prop("checked", true);
-        });
-    } else {
-        //alert("反选");
-        $("input[name='dataCheckBox']:checkbox").each(function() {
-            $(this).prop("checked", false);
-        });
-    }
-}
-
-
-
-/** 翻页 */
-function turnPage(targetPageNum){
-    loadList(itemNumPerPage, targetPageNum);
-}
-
-
-/** 刷新每页显示的条目数 */
-function updatePageSize(ele){
-
-    var newPageSize = parseInt($(ele).children(":selected")[0].value);
-    var oldPageSize = parseInt($.trim($("#pageSizeVal").val()));
-
-    if(newPageSize != null && oldPageSize != newPageSize){
-        $("#pageSizeVal").val(newPageSize);
-        itemNumPerPage = newPageSize;
-        loadList(newPageSize, 1);
-    }
-
-}
 
 
 /** 加载列表数据 */
@@ -81,101 +15,41 @@ function loadList(pageSize, pageNum){
         {
             "productName" : $.trim($("#productName").val()),
             "createdUser" : $.trim($("#createdUser").val()),
-            "productInvalid" : $.trim($("#validStatus").val()) == '' ? null : parseInt($.trim($("#validStatus").val())),
+            "productInvalid" : $("#query_validStatus :selected").eq(0).val(),
             "pageSize":pageSize,
             "pageNum":pageNum
         },
-        function(result) {
-            data = result.dataList;
-            commonObj.tabInit("#tableId");
-
-            var currentPage = result.pageNum;
-            var pageTotal = result.pages;
-            var pageSize = result.pageSize;
-            var totalItemNums = result.recordsTotal;
-
-
-            /** 设置左下角分页信息显示 */
-            var currentPagenationInfo = "";
-            if(0 != pageSize){
-                currentPagenationInfo = "当前显示第 " + ((currentPage -1 ) * pageSize + 1 ) + " ~ " + ( (currentPage * pageSize) > totalItemNums ? totalItemNums : (currentPage * pageSize) ) + " 条，共 " + totalItemNums + " 条记录";
+        function(resultMsg) {
+            if(resultMsg.success){
+                commonObj.loadData(resultMsg);
             }else{
-                currentPagenationInfo = "当前显示第 1 ~ " + totalItemNums + " 条，共 " + totalItemNums + " 条记录";
+                layer.msg(resultMsg.message + ":数据加载失败",{icon:5,time:2000});
             }
-            if(currentPage === 0 && pageTotal === 0 && totalItemNums === 0){
-                currentPagenationInfo = "";
-            }
-
-            $("#tableId_info").html(currentPagenationInfo);
-
-
-            /** 设置右下角分页页签 */
-            var pagenationContent ="";
-
-
-            if(pageTotal <=3){
-                for(var i = 1; i<=pageTotal; i++){
-                    if(i === currentPage){
-                        pagenationContent += '   <span id="current_page"><a class="paginate_button current" aria-controls="tableId" data-dt-idx="1" tabindex="0" href="javascript:void(0);" onclick="turnPage(' + i + ')">' + i + '</a></span>';
-                    }else{
-                        pagenationContent += '   <span><a class="paginate_button disabled" aria-controls="tableId" data-dt-idx="1" tabindex="0" href="javascript:void(0);" onclick="turnPage(' + i + ')">' + i + '</a></span>';
-                    }
-                }
-            }else{
-                // 总页数超过3页总是显示首页
-                pagenationContent += '<span><a class="paginate_button previous disabled" aria-controls="tableId" data-dt-idx="0" tabindex="0" id="tableId_first_page" href="javascript:void(0);" onclick="turnPage(1)"> 首页 </a></span>';
-                // 如果当前页不是第一页，则显示当前页的上一页
-                if(1 != currentPage){
-                    if(pageTotal === currentPage){
-                        pagenationContent += '   <span><a class="paginate_button disabled" aria-controls="tableId" data-dt-idx="1" tabindex="0" href="javascript:void(0);" onclick="turnPage(' + (currentPage -2) + ')">' + (currentPage-2) + '</a></span>';
-                    }
-                    pagenationContent += '   <span><a class="paginate_button disabled" aria-controls="tableId" data-dt-idx="1" tabindex="0" href="javascript:void(0);" onclick="turnPage(' + (currentPage -1) + ')">' + (currentPage-1) + '</a></span>';
-                }
-
-
-                // 当前页签
-                pagenationContent += '   <span id="current_page"><a class="paginate_button current" aria-controls="tableId" data-dt-idx="1" tabindex="0">' + currentPage + '</a></span>';
-
-
-                if(pageTotal != currentPage){
-                    pagenationContent += '   <span><a class="paginate_button disabled" aria-controls="tableId" data-dt-idx="1" tabindex="0" href="javascript:void(0);" onclick="turnPage(' + (currentPage +1) + ')">' + (currentPage+1) + '</a></span>';
-                    if(1 === currentPage){
-                        pagenationContent += '   <span><a class="paginate_button disabled" aria-controls="tableId" data-dt-idx="1" tabindex="0" href="javascript:void(0);" onclick="turnPage(' + (currentPage +2) + ')">' + (currentPage+2) + '</a></span>';
-                    }
-                }
-                // 总页数超过3页总是显示末页
-                pagenationContent += '<span><a class="paginate_button previous disabled" aria-controls="tableId" data-dt-idx="0" tabindex="0" id="tableId_last_page" href="javascript:void(0);" onclick="turnPage(' + pageTotal + ')"> 末页 </a></span>';
-            }
-
-            pagenationContent += '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>跳转到第 <input type="text" id="targetPage"/> 页 <b><button id="goToTargetPage" onclick="gotoTargetPage(this)">Go</button>';
-
-            if(0 === pageSize ){
-                pagenationContent = "";
-            }
-
-            $("div[id='pagenationContainer']").html(pagenationContent);
         }
     );
 
 }
 
 
-
-/** 去指定页面 */
-function gotoTargetPage(btn){
-    itemNumPerPage = parseInt($.trim($("#pageSizeVal").val()));
-    var targetPageNumber = parseInt($.trim($("#targetPage").val()));
-    loadList(itemNumPerPage, targetPageNumber)
-}
-
-
-/** 列表搜索 */
+/** 列表条件搜索 */
 $('#selectInfo').on( 'click', function () {
-    var v= $("#mobile").val();
-    console.log("v:"+v);
 
-    loadList(itemNumPerPage, 1);
-
+    RestfulClient.post("/product/list",
+        {
+            "productName": $.trim($("#productName").val()),
+            "createdUser": $.trim($("#createdUser").val()),
+            "productInvalid": $("#query_validStatus :selected").eq(0).val(),
+            "pageSize":itemNumPerPage,
+            "pageNum":currentPage
+        },
+        function(resultMsg) {
+            if(resultMsg.success){
+                commonObj.loadData(resultMsg);
+            }else{
+                layer.msg(resultMsg.message + ":数据加载失败",{icon:5,time:2000});
+            }
+        }
+    );
 });
 
 
@@ -205,6 +79,9 @@ $("#deleteRow").click(function() {
                 success:function(result){
                     layer.msg(result.resultMsg,{icon:1,time:2000});
                     loadList(itemNumPerPage, 1);
+                },
+                error:function(XMLHttpRequest, textStatus, errorThrown){
+                    layer.alert(XMLHttpRequest.status+XMLHttpRequest.readyState+" "+textStatus+" "+errorThrown);
                 }
             })
         });
@@ -338,101 +215,105 @@ var commonObj = {
     //表格行内编辑
     editTab:function(){
 
-        $(".table").on("click",".uEditBtn",function(){
-            var strOld = $(this).html();
-
-            if("编辑" === strOld){
-                //保留修改之前的 tr元素内的HTML代码
-                currentTrContent = $(this).parent().parent().html();
-            }
-            tr_ele = $(this).parent().parent();
-            str = $(this).html()=="编辑"?"确定":"编辑";
-            $(this).html(str);
-            flag = !flag;
-            if(flag){
-                $(this).removeClass("blueBtn");
-            }else{
-                $(this).addClass("blueBtn");
-            }
-            var data = $(this).parent().siblings(".editClass");
-            data.each(function(a,b){
-
-                var obj_text = $(this).find("input:text");
-                var obj_select = $(this).find("select");
-                var text_select = "<select class='tab_select'><option value='0'>是</option><option value='1'>否</option></select>";
-                //console.log(a,b)
-                obj_option = $(this).find("option:selected").html();
-                if(!obj_text.length && !obj_select.length){
-                    if($(this).text() === 'x' || $(this).text() === '√') {
-                        if($(this).text() === 'x'){
-                            $(this).html("<input class='tab_input' type='text' value='0'>");
-                        }else{
-                            $(this).html("<input class='tab_input' type='text' value='1'>");
-                        }
-                    }else{
-                        $(this).html("<input class='tab_input' type='text' value='" + $(this).text() + "'>");
-                    }
-                }else{
-                    var modified_val = obj_text.val();
-                    if(modified_val === '0' || modified_val === '1'){
-                        var status_flag = obj_text.val();
-                        modified_val = status_flag === '0' ? '<font color="red" size="3">x</font>' : '<font size="3">√</font>';
-                        modified_val += '<input class="tab_input" type="hidden" value="'+ status_flag +'"/>';
-                        $(this).html(modified_val);
-                    }else{
-                        this.innerText = modified_val;
-                    }
-                }
+        //弹出模态框
 
 
 
-            })
-
-            if(strOld == '编辑'){
-                var currentId = $(this).attr("id");
-            }else if(strOld == '确定'){
-
-                var productId_td_ele = $(this).parent().parent().find("td").eq(11);
-                var productName_td_ele =  $(this).parent().parent().find("td").eq(2);
-                var productDivHtml_td_ele = $(this).parent().parent().find("td").eq(4);
-                var productRemark_td_ele = $(this).parent().parent().find("td").eq(5);
-                var productInvalid_td_ele = $(this).parent().parent().find("td").eq(6);
-                var updatedUser_td_ele = $(this).parent().parent().find("td").eq(9);
-
-                var productId = $.trim(productId_td_ele.html());
-                var productName = $.trim(productName_td_ele.html());
-                var productDivHtml = $.trim(String(productDivHtml_td_ele[0].innerText));
-                var productRemark = $.trim(productRemark_td_ele.html());
-                var productInvalid = $.trim(productInvalid_td_ele.children().eq(1).val());
-                var updatedUser = $.trim(updatedUser_td_ele.html());
-
-                if(isEmpty(productId) || isEmpty(productName) || isEmpty(productDivHtml) || isEmpty(productRemark) || isEmpty(productInvalid) || isEmpty(updatedUser)){
-                    layer.alert('请完善添加信息之后提交');
-                    return ;
-                }
-
-                RestfulClient.post("/product/editProductInfo",
-                    {
-                        "productId" : productId,
-                        "productName" : productName,
-                        "productDivHtml" : productDivHtml,
-                        "productRemark" : productRemark,
-                        "productInvalid": productInvalid,
-                        "updatedUser": updatedUser
-                    },
-                    function(result) {
-                        if(result.resultCode != 0){
-                            tr_ele.html(currentTrContent);
-                            layer.msg(result.resultMsg,{icon:7,time:2000});
-                            return;
-                        }else{
-                            layer.msg(result.resultMsg,{icon:1,time:2000});
-                        }
-                    }
-                );
-            }
-
-        })
+        // $(".table").on("click",".uEditBtn",function(){
+        //     var strOld = $(this).html();
+        //
+        //     if("编辑" === strOld){
+        //         //保留修改之前的 tr元素内的HTML代码
+        //         currentTrContent = $(this).parent().parent().html();
+        //     }
+        //     tr_ele = $(this).parent().parent();
+        //     str = $(this).html()=="编辑"?"确定":"编辑";
+        //     $(this).html(str);
+        //     flag = !flag;
+        //     if(flag){
+        //         $(this).removeClass("blueBtn");
+        //     }else{
+        //         $(this).addClass("blueBtn");
+        //     }
+        //     var data = $(this).parent().siblings(".editClass");
+        //     data.each(function(a,b){
+        //
+        //         var obj_text = $(this).find("input:text");
+        //         var obj_select = $(this).find("select");
+        //         var text_select = "<select class='tab_select'><option value='0'>是</option><option value='1'>否</option></select>";
+        //         //console.log(a,b)
+        //         obj_option = $(this).find("option:selected").html();
+        //         if(!obj_text.length && !obj_select.length){
+        //             if($(this).text() === 'x' || $(this).text() === '√') {
+        //                 if($(this).text() === 'x'){
+        //                     $(this).html("<input class='tab_input' type='text' value='0'>");
+        //                 }else{
+        //                     $(this).html("<input class='tab_input' type='text' value='1'>");
+        //                 }
+        //             }else{
+        //                 $(this).html("<input class='tab_input' type='text' value='" + $(this).text() + "'>");
+        //             }
+        //         }else{
+        //             var modified_val = obj_text.val();
+        //             if(modified_val === '0' || modified_val === '1'){
+        //                 var status_flag = obj_text.val();
+        //                 modified_val = status_flag === '0' ? '<font color="red" size="3">x</font>' : '<font size="3">√</font>';
+        //                 modified_val += '<input class="tab_input" type="hidden" value="'+ status_flag +'"/>';
+        //                 $(this).html(modified_val);
+        //             }else{
+        //                 this.innerText = modified_val;
+        //             }
+        //         }
+        //
+        //
+        //
+        //     });
+        //
+        //     if(strOld == '编辑'){
+        //         var currentId = $(this).attr("id");
+        //     }else if(strOld == '确定'){
+        //
+        //         var productId_td_ele = $(this).parent().parent().find("td").eq(11);
+        //         var productName_td_ele =  $(this).parent().parent().find("td").eq(2);
+        //         var productDivHtml_td_ele = $(this).parent().parent().find("td").eq(4);
+        //         var productRemark_td_ele = $(this).parent().parent().find("td").eq(5);
+        //         var productInvalid_td_ele = $(this).parent().parent().find("td").eq(6);
+        //         var updatedUser_td_ele = $(this).parent().parent().find("td").eq(9);
+        //
+        //         var productId = $.trim(productId_td_ele.html());
+        //         var productName = $.trim(productName_td_ele.html());
+        //         var productDivHtml = $.trim(String(productDivHtml_td_ele[0].innerText));
+        //         var productRemark = $.trim(productRemark_td_ele.html());
+        //         var productInvalid = $.trim(productInvalid_td_ele.children().eq(1).val());
+        //         var updatedUser = $.trim(updatedUser_td_ele.html());
+        //
+        //         if(isEmpty(productId) || isEmpty(productName) || isEmpty(productDivHtml) || isEmpty(productRemark) || isEmpty(productInvalid) || isEmpty(updatedUser)){
+        //             layer.alert('请完善添加信息之后提交');
+        //             return ;
+        //         }
+        //
+        //         RestfulClient.post("/product/editProductInfo",
+        //             {
+        //                 "productId" : productId,
+        //                 "productName" : productName,
+        //                 "productDivHtml" : productDivHtml,
+        //                 "productRemark" : productRemark,
+        //                 "productInvalid": productInvalid,
+        //                 "updatedUser": updatedUser
+        //             },
+        //             function(result) {
+        //                 if(result.resultCode != 0){
+        //                     tr_ele.html(currentTrContent);
+        //                     layer.msg(result.resultMsg,{icon:7,time:2000});
+        //                     return;
+        //                 }else{
+        //                     layer.msg(result.resultMsg,{icon:1,time:2000});
+        //                 }
+        //             }
+        //         );
+        //     }
+        //
+        // })
 
     },
     //表格内容删除
@@ -563,6 +444,13 @@ var commonObj = {
             });
         })
     },
+    loadData:function(resultMsg) {
+        result = resultMsg.data;
+        data = result.dataList;
+        commonObj.tabInit("#tableId");
+        paginationInfo();
+
+    }
 };
 commonObj.init();
 
@@ -691,6 +579,9 @@ var ProductCommon = function(){
                             layer.alert(result.resultMsg);
                             layer.close(index);
                             loadList(itemNumPerPage, parseInt($.trim($("#currentPageNo").val())));
+                        },
+                        error:function(XMLHttpRequest, textStatus, errorThrown){
+                            layer.alert(XMLHttpRequest.status+XMLHttpRequest.readyState+" "+textStatus+" "+errorThrown);
                         }
                     });
                 },
@@ -698,7 +589,7 @@ var ProductCommon = function(){
 
                 },
                 end : function() {
-                    loadList(itemNumPerPage, parseInt($.trim($("#currentPageNo").val())));
+
                 }
             });
         }

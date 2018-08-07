@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.yaic.platform.dao.PartnerDao" >
+
   <resultMap id="BaseResultMap" type="com.yaic.platform.entity.Partner" >
     <constructor >
       <idArg column="partner_id" jdbcType="INTEGER" javaType="java.lang.Integer" />
@@ -32,8 +33,7 @@
   </select>
 
 
-  <select id="selectList" parameterType="com.yaic.platform.dto.PartnerListDto" resultMap="BaseResultMap">
-
+  <select id="selectList" parameterType="com.yaic.platform.entity.Partner" resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List" />
     from t_platform_partner
@@ -44,11 +44,18 @@
       <if test="partnerInvalid != null and partnerInvalid != ''" >
         and partner_invalid = #{partnerInvalid,jdbcType=CHAR}
       </if>
-      <if test="createdUser != null and createdUser != ''" >
-        and created_user = #{createdUser,jdbcType=VARCHAR}
-      </if>
     </trim>
     order by created_date desc
+  </select>
+  
+  <select id="selectListByKeys" parameterType="java.util.List" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from t_platform_partner
+    where partner_id in
+    <foreach collection="array" item="id" open="(" close=")" separator=",">
+      #{id,jdbcType=INTEGER}
+    </foreach>
   </select>
 
 
@@ -66,20 +73,7 @@
       #{id,jdbcType=INTEGER}
     </foreach>
   </delete>
-
-
-
-  <insert id="insert" parameterType="com.yaic.platform.dto.PartnerAddDto" >
-    insert into t_platform_partner (partner_name, partner_img,
-      partner_invalid, partner_remark, partner_field_aa, 
-      created_date, created_user)
-    values (#{partnerName,jdbcType=VARCHAR}, #{partnerImg,jdbcType=VARCHAR},
-      #{partnerInvalid,jdbcType=CHAR}, #{partnerRemark,jdbcType=VARCHAR}, #{partnerFieldAa,jdbcType=VARCHAR}, 
-      #{createdDate,jdbcType=TIMESTAMP}, #{createdUser,jdbcType=VARCHAR})
-  </insert>
-
-
-
+  
   <insert id="insertSelective" parameterType="com.yaic.platform.entity.Partner" >
     insert into t_platform_partner
     <trim prefix="(" suffix=")" suffixOverrides="," >
@@ -148,36 +142,39 @@
     </trim>
   </insert>
 
-
-
-  <update id="updateByPrimaryKeySelective" parameterType="com.yaic.platform.dto.PartnerModifyDto" >
-    update t_platform_partner
-    <set >
-      <if test="partnerName != null and partnerName !=''" >
-        partner_name = #{partnerName,jdbcType=VARCHAR},
-      </if>
-      <if test="partnerImage != null and partnerImage != ''" >
-        partner_img = #{partnerImage,jdbcType=VARCHAR},
-      </if>
-      <if test="partnerInvalid != null and partnerInvalid != ''" >
-        partner_invalid = #{partnerInvalid,jdbcType=CHAR},
-      </if>
-      <if test="partnerRemark != null and partnerRemark != ''" >
-        partner_remark = #{partnerRemark,jdbcType=VARCHAR},
-      </if>
-      <if test="partnerFieldAa != null and partnerFieldAa != ''" >
-        partner_field_aa = #{partnerFieldAa,jdbcType=VARCHAR},
-      </if>
-      <if test="updateDate != null" >
-        update_date = #{updateDate,jdbcType=TIMESTAMP},
-      </if>
-      <if test="updatedUser != null and updatedUser != ''" >
-        updated_user = #{updatedUser,jdbcType=VARCHAR},
-      </if>
-    </set>
-    where partner_id = #{partnerId,jdbcType=INTEGER}
-  </update>
-
+	<update id="updateByPrimaryKeySelective" parameterType="com.yaic.platform.entity.Partner">
+	    update t_platform_partner
+	    <set>
+	      <if test="partnerName != null">
+	        partner_name = #{partnerName,jdbcType=VARCHAR},
+	      </if>
+	      <if test="partnerImg != null">
+	        partner_img = #{partnerImg,jdbcType=VARCHAR},
+	      </if>
+	      <if test="partnerInvalid != null">
+	        partner_invalid = #{partnerInvalid,jdbcType=CHAR},
+	      </if>
+	      <if test="partnerRemark != null">
+	        partner_remark = #{partnerRemark,jdbcType=VARCHAR},
+	      </if>
+	      <if test="partnerFieldAa != null">
+	        partner_field_aa = #{partnerFieldAa,jdbcType=VARCHAR},
+	      </if>
+	      <if test="createdDate != null">
+	        created_date = #{createdDate,jdbcType=TIMESTAMP},
+	      </if>
+	      <if test="createdUser != null">
+	        created_user = #{createdUser,jdbcType=VARCHAR},
+	      </if>
+	      <if test="updateDate != null">
+	        update_date = #{updateDate,jdbcType=TIMESTAMP},
+	      </if>
+	      <if test="updatedUser != null">
+	        updated_user = #{updatedUser,jdbcType=VARCHAR},
+	      </if>
+	    </set>
+	    where partner_id = #{partnerId,jdbcType=INTEGER}
+	  </update>
 
 
   <update id="updateByPrimaryKey" parameterType="com.yaic.platform.entity.Partner" >
