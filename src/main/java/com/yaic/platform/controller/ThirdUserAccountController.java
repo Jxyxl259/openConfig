@@ -42,8 +42,8 @@ public class ThirdUserAccountController{
 	private ThirdUserAccountService accountService;
 	
 	@ApiOperation(value = "用户列表", notes="用户列表")
-	@RequestMapping(value = "/list", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-	public ReturnMsg getThirdPartyAccountList(@RequestBody ThirdUserDto thirdUserDto){
+	@RequestMapping(value = "/list", method = RequestMethod.POST)
+	public ReturnMsg getThirdPartyAccountList(ThirdUserDto thirdUserDto){
 		
 		logger.debug("getPartnerList userAccount_param:{}", JSON.toJSONString(thirdUserDto));
 

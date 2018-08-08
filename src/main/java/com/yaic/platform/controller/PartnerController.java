@@ -51,8 +51,8 @@ public class PartnerController {
 	}
 
 	@ApiOperation(value = "获取第三方合作商信息列表", notes = "获取第三方合作商信息列表")
-	@RequestMapping(value = "/list", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-	public ReturnMsg getPartnerList(@RequestBody PartnerDto partnerDto) {
+	@RequestMapping(value = "/list", method = RequestMethod.POST)
+	public ReturnMsg getPartnerList(PartnerDto partnerDto) {
 
 		logger.info("getPartnerList PartnerDto_param:{}", JSON.toJSONString(partnerDto));
 

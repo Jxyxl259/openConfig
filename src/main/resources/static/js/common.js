@@ -10,6 +10,22 @@ layer.config({
     skin: 'layer-ext-openSkin'
 });
 
+/** 表单封装 */
+$.fn.formData = function(fromId) {
+    var o = {};
+    var a = $("#" + fromId).serializeArray();
+    $.each(a, function() {
+        if (o[this.name]) {
+            if (!o[this.name].push) {
+                o[this.name] = [o[this.name]];
+            }
+            o[this.name].push(this.value || '');
+        } else {
+            o[this.name] = this.value || '';
+        }
+    });
+    return o;
+};
 
 
 /** 数据初始化 */
@@ -18,6 +34,37 @@ $(function() {
     currentPage = parseInt($.trim($("#currentPageNo").val()));
     loadList(itemNumPerPage,currentPage);
 });
+
+
+/** 列表查询 */
+var conditionQuery = function (url) {
+    var formData = new FormData($(".list-condition-form")[0]);
+    formData.append("pageSize", itemNumPerPage);
+    formData.append("pageNum", currentPage);
+
+    $.ajax({
+        url:url,
+        async:false,
+        type:"POST",
+        data:formData,
+        processData: false,  // 告诉jQuery不要去处理发送的数据
+        contentType: false,   // 告诉jQuery不要去设置Content-Type请求头
+        success:function(resultMsg){
+            if(resultMsg.success){
+                result = resultMsg.data;
+                data = result.dataList;
+                commonObj.tabInit("#tableId");
+                paginationInfo(result);
+            }else{
+                layer.alert(resultMsg.message + ":数据加载失败");
+            }
+        },
+        error:function(XMLHttpRequest, textStatus, errorThrown){
+            layer.alert(XMLHttpRequest.status+XMLHttpRequest.readyState+" "+textStatus+" "+errorThrown);
+        }
+    });
+};
+
 
 
 /** 全选/反选 */
@@ -51,6 +98,8 @@ var updatePageSize = function(ele){
 
 /** 翻页 */
 var turnPage = function(targetPageNum){
+    $("#currentPageNo").val(targetPageNum);
+    currentPage = targetPageNum;
     loadList(itemNumPerPage, targetPageNum);
 };
 
@@ -63,9 +112,8 @@ var gotoTargetPage = function(btn){
 };
 
 
-
 /** 分页信息*/
-var paginationInfo = function(){
+var paginationInfo = function(result){
     var currentPage = result.pageNum;
     var pageTotal = result.pages;
     var pageSize = result.pageSize;

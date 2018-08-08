@@ -36,34 +36,36 @@ public class PartnerServiceImpl implements PartnerService {
 	
 
 	@Override
-	public ReturnMsg modifyPartnerInfoByPartnerId(PartnerDto partnerDto, MultipartFile partnerImageFile) {	
+	public ReturnMsg modifyPartnerInfoByPartnerId(PartnerDto partnerDto, MultipartFile partnerImageFile) {
 		ReturnMsg result = new ReturnMsg();
+
+		Partner partner = new Partner();
+		String fileName = null;
 		try {
-			Partner partner = new Partner();
-			String fileName = null;
-			
+
 			if (partnerImageFile != null && StringUtils.isNotBlank(partnerImageFile.getOriginalFilename())) {
 				ReturnMsg msg = ImageUtils.checkUpLoadImg(partnerImageFile);
 				if (!msg.isSuccess()) {
 					return msg;
-				}else {
-					fileName = ImageUtils.fileCopy(partnerImageFile, partnerImageFilePath);
-					if (StringUtils.isEmpty(fileName)) { //这里直接返回null或者文件名称
-						result.setSuccess(false);
-						result.setMessage(GlobalMessageEnum.FILE_UPLOAD_FAILURE.getMsg());
-						result.setCode(GlobalMessageEnum.FILE_UPLOAD_FAILURE.getCode());
-						return result;
-					}
 				}
+				fileName = ImageUtils.fileCopy(partnerImageFile, partnerImageFilePath);
+				if (StringUtils.isEmpty(fileName)) { //这里直接返回null或者文件名称
+					result.setSuccess(false);
+					result.setMessage(GlobalMessageEnum.FILE_UPLOAD_FAILURE.getMsg());
+					result.setCode(GlobalMessageEnum.FILE_UPLOAD_FAILURE.getCode());
+					return result;
+				}
+				ImageUtils.deleteImageByPath(partnerImageFilePath + File.separator + partnerDto.getPicFileNameBeforeModified());
 			}
-			
+
 			// 数据入库
 			BeanCopyUtils.beanCopy(partnerDto, partner);
 			partner.setUpdateDate(new Date());
+			partner.setUpdatedUser("admin");
 			partner.setPartnerImg(fileName);
-			
+
 			partnerDao.updateByPrimaryKeySelective(partner);
-			
+
 			result.setSuccess(true);
 			result.setMessage(GlobalMessageEnum.SYS_CODE_200.getMsg());
 			result.setCode(GlobalMessageEnum.SYS_CODE_200.getCode());
@@ -129,8 +131,8 @@ public class PartnerServiceImpl implements PartnerService {
 		result.setCode(GlobalMessageEnum.SYS_CODE_200.getCode());
 		
 		int affectRows = -1;
+		String fileName = null;
 		try {
-			String fileName = null;
 			if (partnerImageFile != null && StringUtils.isNotBlank(partnerImageFile.getOriginalFilename())) {
 				ReturnMsg msg = ImageUtils.checkUpLoadImg(partnerImageFile);
 				if (!msg.isSuccess()) {
@@ -151,8 +153,10 @@ public class PartnerServiceImpl implements PartnerService {
 			Partner partner = new Partner();
 			BeanCopyUtils.beanCopy(partnerDto, partner);
 			partner.setCreatedDate(new Date());
+			// TODO 待用户登录功能实现后再完善
+			partner.setCreatedUser("admin");
 			partner.setPartnerImg(fileName);
-			
+
 			affectRows = partnerDao.insertSelective(partner);
 			
 			if(affectRows != 1){
@@ -161,13 +165,14 @@ public class PartnerServiceImpl implements PartnerService {
 				result.setSuccess(false);
 				result.setMessage(GlobalMessageEnum.DATABASE_INTERACTIVE_FAILED.getMsg());
 				result.setCode(GlobalMessageEnum.DATABASE_INTERACTIVE_FAILED.getCode());
+				ImageUtils.deleteImageByPath(partnerImageFilePath + File.separator + fileName);
 			}
 		} catch (Exception e) {
 			logger.error("Exception Failure!!! Reason={}", e.getCause());
 			result.setSuccess(false);
 			result.setMessage(GlobalMessageEnum.SYS_CODE_500.getMsg());
 			result.setCode(GlobalMessageEnum.SYS_CODE_500.getCode());
-			
+			ImageUtils.deleteImageByPath(partnerImageFilePath + File.separator + fileName);
 		}
 		return result;
 	}

@@ -91,16 +91,18 @@ public class ProductServiceImpl implements ProductService {
 					result.setCode(GlobalMessageEnum.FILE_UPLOAD_FAILURE.getCode());
 					return result;
 				}
+				ImageUtils.deleteImageByPath(productImageFilePath + File.separator + productDto.getPicFileNameBeforeModified());
 			}
-			
+
 			// 数据入库
 			Product product = new Product();
 			BeanCopyUtils.beanCopy(productDto, product);
 			product.setUpdateDate(new Date());
+			product.setUpdatedUser("admin");
 			product.setProductImg(fileName);
-			
+
 			productDao.updateByPrimaryKeySelective(product);
-			
+
 			result.setSuccess(true);
 			result.setMessage(GlobalMessageEnum.SYS_CODE_200.getMsg());
 			result.setCode(GlobalMessageEnum.SYS_CODE_200.getCode());
@@ -120,9 +122,10 @@ public class ProductServiceImpl implements ProductService {
 		result.setCode(GlobalMessageEnum.SYS_CODE_200.getCode());
 		
 		int affectRows = -1;
+        String fileName = null;
 		try {
 			
-			String fileName = ImageUtils.fileCopy(productImageFile, productImageFilePath);
+			fileName = ImageUtils.fileCopy(productImageFile, productImageFilePath);
 			if (StringUtils.isEmpty(fileName)) { //这里直接返回null或者文件名称
 				result.setSuccess(false);
 				result.setMessage(GlobalMessageEnum.FILE_UPLOAD_FAILURE.getMsg());
@@ -134,6 +137,8 @@ public class ProductServiceImpl implements ProductService {
 			Product product = new Product();
 			BeanCopyUtils.beanCopy(productDto, product);
 			product.setCreatedDate(new Date());
+            // TODO 待用户登录功能实现后再完善
+            product.setCreatedUser("admin");
 			product.setProductImg(fileName);
 			
 			affectRows = productDao.insertSelective(product);
@@ -144,13 +149,15 @@ public class ProductServiceImpl implements ProductService {
 				result.setSuccess(false);
 				result.setMessage(GlobalMessageEnum.DATABASE_INTERACTIVE_FAILED.getMsg());
 				result.setCode(GlobalMessageEnum.DATABASE_INTERACTIVE_FAILED.getCode());
-			}
+                ImageUtils.deleteImageByPath(productImageFilePath + File.separator + fileName);
+
+            }
 		} catch (Exception e) {
 			logger.error("Exception Failure!!! Reason={}", e.getCause());
 			result.setSuccess(false);
 			result.setMessage(GlobalMessageEnum.SYS_CODE_500.getMsg());
 			result.setCode(GlobalMessageEnum.SYS_CODE_500.getCode());
-			
+			ImageUtils.deleteImageByPath(productImageFilePath + File.separator + fileName);
 		}
 		return result;
 	}

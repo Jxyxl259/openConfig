@@ -205,8 +205,8 @@
       <if test="productRemark != null and productRemark != ''" >
         product_remark = #{productRemark,jdbcType=VARCHAR},
       </if>
-      <if test="productImage != null and productImage != ''" >
-        product_img = #{productImage,jdbcType=VARCHAR},
+      <if test="productImg != null and productImg != ''" >
+        product_img = #{productImg,jdbcType=VARCHAR},
       </if>
       <if test="productDivHtml != null and productDivHtml != ''" >
         product_div_html = #{productDivHtml,jdbcType=VARCHAR},

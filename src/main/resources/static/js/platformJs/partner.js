@@ -1,48 +1,16 @@
 // 合作方 js
-var flag = true;
 var data;
-
 
 /** 加载列表数据 */
 function loadList(pageSize, pageNum){
     $("#currentPageNo").val(pageNum);
-    RestfulClient.post(
-        "/partner/list",
-        {
-            "partnerName" : $.trim($("#query_partnerName").val()),
-            "partnerInvalid" : $("#query_validStatus :selected").eq(0).val(),
-            "pageSize":pageSize,
-            "pageNum":pageNum
-        },
-        function(resultMsg) {
-            if(resultMsg.success){
-                commonObj.loadData(resultMsg);
-            }else{
-                layer.msg(resultMsg.message + ":数据加载失败",{icon:5,time:2000});
-            }
-        }
-    );
+    conditionQuery("/partner/list");
 
 }
 
 /** 列表条件搜索 */
 $('#selectInfo').on( 'click', function () {
-    var partnerName = $.trim($("#query_partnerName").val());
-    var partnerInvalid = $("#query_validStatus :selected").eq(0).attr("value");
-
-    RestfulClient.post("/partner/list",
-        {
-            "partnerName": partnerName,
-            "partnerInvalid": partnerInvalid
-        },
-        function(resultMsg) {
-            if(resultMsg.success){
-                commonObj.loadData(resultMsg);
-            }else{
-                layer.msg(resultMsg.message + ":数据加载失败",{icon:5,time:2000});
-            }
-        }
-    );
+    conditionQuery("/partner/list");
 });
 
 
@@ -78,11 +46,11 @@ var columns = [
 var commonObj = {
     init:function(){
         this.tabInit();      //table 初始化
+        this.addNew();       //添加新项
         this.editTab_new();  //模态框弹出编辑
         this.deleteTab();    //删除当前行
         this.deleteAll();    //批量删除
         this.detailTab();    //详情展示
-        this.resetFn();      //列表搜索  & 搜索框重置  &  合作方添加
     },
     //表格初始化
     tabInit:function(tabId){
@@ -139,21 +107,23 @@ var commonObj = {
     },
     editTab_new:function(){
     	$("#tableId").on("click",".uEditBtn",function(){
-      		 var editContent = $(this).parent("td").parent("tr").find(".editClass");
-      		 $("#modifyPartnerName").val(editContent.eq(0).text());   //合作伙伴
-      		 $(".text_picWrap").empty().append(editContent.eq(1).html()); //图片
-      		 $("#modifyPartnerRemark").val(editContent.eq(2).text());   //备注
+    	    var editContent = $(this).parent("td").parent("tr").find(".editClass");
+    	    $("#modifyPartnerName").val(editContent.eq(0).text());   //合作伙伴
+            $(".text_picWrap").empty().append(editContent.eq(1).html()); //图片
+            $("#modifyPartnerRemark").val(editContent.eq(2).text());   //备注
 
-      		 if( editContent.eq(3).find("input").val() == "1" ){               //是否有效
-      			 $("#haveEffect").prop("checked",true);           
-      		 }else{  
-      			 $("#NoEffect").prop("checked",true);	
-      		 }
-      		 
-      		 $("#modifyPartnerId").val(this.id);   //备注
-      		
-      		 PartnerCommon.changeFile()
-      		 PartnerCommon.modifyPartner();
+            if( editContent.eq(3).find("input").val() == "1" ){               //是否有效
+                 $("#haveEffect").prop("checked",true);
+            }else{
+                 $("#NoEffect").prop("checked",true);
+            }
+
+            $("#modifyPartnerId").val(this.id);   //备注
+
+            var imgUrl = editContent.eq(1).children().eq(0).attr("src");
+      		$("#picFileNameBeforeModifiedId").val(imgUrl.substring(imgUrl.lastIndexOf('/')+1,imgUrl.length)); // 修改之前的图片名
+      		PartnerCommon.changeFile();
+      		PartnerCommon.modifyPartner();
       	});
     },
     //表格内容删除
@@ -191,8 +161,8 @@ var commonObj = {
             $("input[type='checkbox']:gt(0):checked").each(function() {
                 var partnerId = $(this).parent().parent().find("td").eq(11).html();
                 array.push(partnerId);
-                var productImgPath = $(this).parent().parent().find("td").eq(3).html();
-                imgPathArray.push(productImgPath);
+                var partnerImgPath = $(this).parent().parent().find("td").eq(3).html();
+                imgPathArray.push(partnerImgPath);
             });
             if (array == 0) {	
             	layer.msg('请勾选要删除的数据！', {time: 5000, icon:1});
@@ -222,34 +192,25 @@ var commonObj = {
         var addTK = '';
         $(".table").on("click",".uDetailBtn",function(){
             var s = $(this).parent().parent().find("td");
-            addTK ='<ul class="alert_ul">'
-                +'<li class="div_wrap"><div class="li_div li_DivL">合作方名称</div>:<div class="li_div li_DivR">'+s.eq(2).text()+'</div></li>'
-                +'<li class="div_wrap"><div class="li_div li_DivL">合作方图片</div>:<div class="li_div li_DivR">'+s.eq(3).html()+'</div></li>'
-                +'<li class="div_wrap"><div class="li_div li_DivL">有效</div>:<div class="li_div li_DivR">'+ s.eq(5).text() +'</div></li>'
-                +'<li class="div_wrap"><div class="li_div li_DivL">合作方备注</div>:<div class="li_div li_DivR">'+ s.eq(4).text() +'</div></li>'
-                +'<li class="div_wrap"><div class="li_div li_DivL">创建人</div>:<div class="li_div li_DivR">'+ s.eq(6).html() +'</div></li>'
-                +'<li class="div_wrap"><div class="li_div li_DivL">更新时间</div>:<div class="li_div li_DivR">'+ s.eq(10).html() +'</div></li>'
-                +'<li class="div_wrap"><div class="li_div li_DivL">更新人</div>:<div class="li_div li_DivR">'+ s.eq(7).html() +'</div></li>'
-                +'</ul>';
+            $("#detail_partnerName").html(s.eq(2).text());
+            $("#detail_partnerImg").html(s.eq(3).html());
+            $("#detail_partnerInvalid").html(s.eq(5).text());
+            $("#detail_partnerRemark").html(s.eq(4).text());
+            $("#detail_createdUser").html(s.eq(6).html());
+            $("#detail_updateDate").html(s.eq(10).html());
+            $("#detail_updatedUser").html(s.eq(7).html());
             layer.open({
                 type :1,
                 title: ['查看详情'],
                 fixed : false,                   // 不固定
                 shadeClose : false,             // 点击遮罩关闭层
                 area : [ '700px', '470px' ],
-                content:addTK
+                content:$("#showDetailDiv")
             });
         })
     },
-    resetFn:function(){
-    	/** 列表搜索 */
-    	$('#query_selectInfo').on( 'click', function () {
-    	    loadList(itemNumPerPage, 1);
-    	});
-    	$(".btn_reset").on("click",function(){
-			$(".input-text").val("");
-		})
-		/** 合作方添加*/
+    /** 合作方添加*/
+    addNew:function(){
 		$("#addRow").on({ "click" : function(event){
 			 	var img = $("<img />");
 		        $(".text_picWrap").html(img);
@@ -257,16 +218,7 @@ var commonObj = {
 		        PartnerCommon.addPartner(event);
 		    }
 		});
-
-    },
-    loadData:function(resultMsg) {
-        result = resultMsg.data;
-        data = result.dataList;
-        commonObj.tabInit("#tableId");
-        paginationInfo();
-
     }
-
 };
 commonObj.init();
 
@@ -284,7 +236,13 @@ var PartnerCommon = {
                 	
                     //alert(JSON.stringify(formdata));
                     var s = /^((?!<script>).)*$/;
-                    if($.trim(formdata.get("partnerName"))=="" || $.trim(formdata.get("partnerImageFile").name)==""){
+                    if(
+                        $.trim(data.get("partnerId"))==""||
+                        $.trim(data.get("partnerName"))==""||
+                        $.trim(data.get("partnerInvalid"))==""||
+                        $.trim(data.get("partnerRemark"))==""||
+                        $.trim(data.get("partnerImageFile").name)==""
+                    ){
                         layer.alert('请完善添加信息之后提交');//使用parent可以获得父页面DOM
                         return ;
                     }else if(!s.test($.trim(formdata.get("partnerName")))){
@@ -329,14 +287,24 @@ var PartnerCommon = {
                 yes : function(index, dom){
                     var data = new FormData(document.getElementById("partnerInfoModifyForm"));
                     var s = /^((?!<script>).)*$/;
-                    if($.trim(data.get("partnerName"))==""){
-                        layer.alert('请完善添加信息之后提交');//使用parent可以获得父页面DOM
+                    if(
+                        $.trim(data.get("partnerId"))==""||
+                        $.trim(data.get("partnerName"))==""||
+                        $.trim(data.get("partnerInvalid"))==""||
+                        $.trim(data.get("partnerRemark"))==""||
+                        $.trim(data.get("picFileNameBeforeModified"))==""
+                    ){
+                        layer.alert('请完善添加信息之后提交');
                         return ;
                     }else if(!s.test($.trim(data.get("partnerName")))){
                         layer.alert("您输入的合作方名称含有非法字符，请重新录入");
                         return;
                     }
-                    
+
+                    // 如果本次修改没有涉及图片修改， 将图片置null
+                    if($.trim(formdata.get("partnerImageFile").name)==""){
+                        formdata.delete("partnerImageFile");
+                    }
                     $.ajax({
                         url:"/partner/modifyPartnerInfo",
                         async:false,
@@ -368,17 +336,17 @@ var PartnerCommon = {
     		$("input[name='partnerImageFile']").on("change" , function(e){
 				 var files = this.files;
 				 var reader = new FileReader();
-				     reader.readAsDataURL(files[0]);
-				     reader.onload =function(e){
-				        var dx =(e.total/1024)/1024;
-				        if(dx>=1){
-				          layer.msg('图片大小超过1M！', {time: 3000, icon:2});
-				          return;
-				        }
-				        var result = this.result;//这里就是转化之后的DataURL
-				        var img = $("<img />").attr("src",this.result);
-				        $(".text_picWrap").empty().append(img);
-				      }	
+                 reader.readAsDataURL(files[0]);
+                 reader.onload =function(e){
+                    var dx =(e.total/1024)/1024;
+                    if(dx>=1){
+                      layer.msg('图片大小超过1M！', {time: 3000, icon:2});
+                      return;
+                    }
+                    var result = this.result;//这里就是转化之后的DataURL
+                    var img = $("<img />").attr("src",this.result);
+                    $(".text_picWrap").empty().append(img);
+                  }
         	})	
         }   
 };

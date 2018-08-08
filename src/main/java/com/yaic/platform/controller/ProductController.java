@@ -40,7 +40,7 @@ public class ProductController {
 	private ProductService productService;
 
 	@ApiOperation(value = "产品信息列表", notes = "产品信息列表")
-	@RequestMapping(value = "/list", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/list", method = RequestMethod.POST)
 	public ReturnMsg getProductList(ProductDto productDto) {
 
 		logger.debug("getList productDto_param:{}", JSON.toJSONString(productDto));
@@ -68,7 +68,7 @@ public class ProductController {
 	@ApiOperation(value = "产品信息修改", notes = "产品信息修改")
 	@RequestMapping(value = "/modifyProductInfo", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public ReturnMsg modifyProductInfo(@Valid ProductDto productDto,
-			@RequestParam(value = "productImageFile", required = false) @ApiParam(name = "partnerImageFile", value = "合作方图片", required = false) MultipartFile productImageFile) {
+			@RequestParam(value = "productImageFile", required = false) @ApiParam(name = "partnerImageFile", value = "合作方图片") MultipartFile productImageFile) {
 
 		logger.debug("modifyProductInfo param:{}", JSON.toJSONString(productDto));
 

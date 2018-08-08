@@ -19,7 +19,7 @@ public class Product{
     private String productImg;
 
     /**
-     * 有效标识 1：已认证 0：未认证
+     * 有效标识 1：有效 0：无效
      */
     private String productInvalid;
 
