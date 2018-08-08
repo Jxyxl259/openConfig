@@ -1,0 +1,105 @@
+﻿<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<!--[if lt IE 9]>
+<script type="text/javascript" src="../../lib/html5shiv.js"></script>
+<script type="text/javascript" src="../../lib/respond.min.js"></script>
+<![endif]-->
+<link rel="stylesheet" type="text/css" href="../../static/h-ui/css/H-ui.min.css" />
+<link rel="stylesheet" type="text/css" href="../../static/h-ui.admin/css/H-ui.admin.css" />
+<link rel="stylesheet" type="text/css" href="../../lib/Hui-iconfont/1.0.8/iconfont.css" />
+<link rel="stylesheet" type="text/css" href="../../static/h-ui.admin/skin/default/skin.css" id="skin" />
+<link rel="stylesheet" type="text/css" href="../../static/h-ui.admin/css/style.css" />
+<link rel="stylesheet" type="text/css" href="../../css/index.css" />
+<!--[if IE 6]>
+<script type="text/javascript" src="../../lib/DD_belatedPNG_0.0.8a-min.js" ></script>
+<script>DD_belatedPNG.fix('*');</script>
+<![endif]-->
+<title>用户管理</title>
+</head>
+<body>
+	<div class="page-container">
+		<div class="box-flex pd-5 bg-1 bk-gray">
+            <form id="userListConditionQueryForm" class="list-condition-form">
+                <div class="page_user_top ">
+                    <label class="page_label">用户名：</label>
+                    <input id="query_accountName" name="accountName" type="text" class="input-text input_userName"
+                           placeholder="请输入用户名称..." />
+                </div>
+                <div class="page_user_top text-c">
+                    <label class="page_label">手机：</label>
+                    <input id="query_mobile" name="mobile" type="text" class="input-text input_userName"
+                           placeholder="请输入手机号..." />
+                </div>
+                <div class="page_user_top text-c">
+                    <label class="page_label">邮箱：</label>
+                    <input id="query_email" name="email" type="text" class="input-text input_userName"
+                           placeholder="请输入邮箱..." />
+                </div>
+                <div class="page_user_top">
+                    <label class="page_label">认证：</label>
+                    <select id="query_authStatus" name="authFlag" class="page_user_select">
+                        <option value="">全部</option>
+                        <option value="1">认证通过</option>
+                        <option value="0">未认证</option>
+                    </select>
+                </div>
+                <div class="page_user_top">
+                    <label class="page_label">有效：</label>
+                    <select id="query_validStatus" name="validFlag" class="page_user_select">
+                        <option value="">全部</option>
+                        <option value="1">有效</option>
+                        <option value="0">无效</option>
+                    </select>
+                </div>
+                <div class="page_user_top top_query_btn_div">
+                    <p>
+                        <button name="" id="selectInfo" class="btn btn-primary top_query_btn" type="button">
+                            <i class="Hui-iconfont">&#xe665;</i>查询
+                        </button>
+                        <button class="btn btn-primary top_query_btn" type="reset">
+                            <i class="Hui-iconfont">&#xe68f;</i>重置
+                        </button>
+                    </p>
+                </div>
+            </form>
+        </div>
+        <div class="l">每页显示
+                <select id="pageSizeOption" class="select" onchange="updatePageSize(this)">
+                    <option value="10">10</option>
+					<option value="20">20</option>
+                    <option value="30">10</option>
+					<option value="50">50</option>
+					<option value="100">100</option>
+                </select>条记录
+            <input id="pageSizeVal" type="hidden" value="10"/>
+        </div>
+		<div class="btn_out r"><a id="deleteRow" href="javascript:;" class="btn btn-primary"><i class="Hui-iconfont">&#xe6e2;</i> 批量删除</a></div>
+		<div class="mt-20 table_box">
+			<table id="tableId" class="table table-border table-bordered table-bg table-hover table-sort table-responsive"></table>
+		</div>
+        <div id="pagenationContainer"></div>
+		<input id="currentPageNo" type="hidden" value="1" />
+    </div>
+<!--_footer 作为公共模版分离出去-->
+<script type="text/javascript" src="../../lib/jquery/1.9.1/jquery.min.js"></script>
+<script type="text/javascript" src="../../lib/layer/2.4/layer.js"></script>
+<script type="text/javascript" src="../../js/menu.js"></script>
+<script type="text/javascript" src="../../static/yafa-restful-client.js"></script>
+<script type="text/javascript" src="../../static/h-ui/js/H-ui.min.js"></script>
+<script type="text/javascript" src="../../static/h-ui.admin/js/H-ui.admin.js"></script> <!--/_footer 作为公共模版分离出去-->
+
+<!--请在下方写此页面业务相关的脚本-->
+<script type="text/javascript" src="../../lib/My97DatePicker/4.8/WdatePicker.js"></script>
+<script type="text/javascript" src="../../lib/datatables/1.10.0/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="../../lib/laypage/1.2/laypage.js"></script>
+<script type="text/javascript" src="../../js/common.js"></script>
+<script type="text/javascript" src="../../js/platformJs/thirdUser.js"></script>
+
+</body>
+</html>

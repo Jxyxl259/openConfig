@@ -1,0 +1,81 @@
+
+#server配置 
+server:
+  tomcat: 
+    uri-encoding: UTF-8
+    max-threads: 10 
+    min-spare-threads: 10
+  connection-timeout: 5000
+
+spring:
+  profiles:
+    active: dev
+  mvc:
+    #关闭默认图标
+    favicon:
+      enabled: false
+    view:
+      prefix: /WEB-INF/jsp/
+      suffix: .jsp
+    static-path-pattern: /**
+  resources:
+    static-locations: classpath:/META-INF/resources/,classpath:/resources/,classpath:/static/,classpath:/public/,file:${imgUploadConfig.product-image-file},file:${imgUploadConfig.partner-image-file}
+  http:
+    encoding:
+      charset: UTF-8
+      force: true
+    multipart:
+      enabled: true
+      max-file-size: 1MB
+      max-request-size: 1MB
+  datasource:
+    druid:
+      initial-size: 5
+      min-idle: 5
+      max-active: 20
+      max-wait: 60000
+      time-between-eviction-runs-millis: 60000
+      min-evictable-idle-time-millis: 300000
+      validation-query: SELECT 1 FROM DUAL
+      test-while-idle: true
+      test-on-borrow: false
+      test-on-return: false
+      pool-prepared-statements: true
+      max-pool-prepared-statement-per-connection-size: 20
+      filters: stat,wall,log4j
+      connection-properties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=3000
+      use-global-data-source-stat: true
+  jackson:  
+    time-zone: GMT+8
+    date-format: yyyy-MM-dd HH:mm:ss
+    
+    
+  
+#监控范围
+#      aop-patterns: com.yaic.auth.*
+#      stat-view-servlet:
+#        login-username: admin
+#        login-password: 123
+        
+
+#mybatis加载， ** 扫描包增强
+mybatis:
+  mapper-locations: classpath:mapping/**/*.xml
+  type-aliases-package: com.yaic.**.entity
+  #下划线转驼峰命名
+  configuration:
+    map-underscore-to-camel-case: true
+    
+# 分页配置
+#     * @param count        是否进行count查询     row-bounds-with-count
+#     * @param reasonable   分页合理化,null时用默认配置   启用合理化时，如果pageNum<1会查询第一页，如果pageNum>pages会查询最后一页
+#     * @param pageSizeZero true且pageSize=0时返回全部结果，false时分页,null时用默认配置
+pagehelper:
+  helper-dialect: mysql
+  reasonable: true
+  offset-as-page-num: true
+  page-size-zero: false
+  row-bounds-with-count: true
+  support-methods-arguments: true
+  params: count=countSql
+  

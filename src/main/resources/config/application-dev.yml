@@ -1,0 +1,36 @@
+#端口
+server:
+  port: 8083
+ #context-path: /openconfig
+
+#mysql jdbc
+spring:
+  datasource:
+    name: authDev
+    type: com.alibaba.druid.pool.DruidDataSource
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://10.1.135.155:3307/open_dev
+    username: dev_open
+    password: 1qaz@WSX
+  #springBoot开启热部署
+  devtools:
+    restart:
+    #热部署生效
+      enabled: false
+      #设置重启的目录
+      additional-paths: src/main/java
+      #classpath目录下的WEB-INF文件夹内容修改不重启
+      exclude: WEB-INF/**  
+
+logging:
+  #加载日志文件
+  config: classpath:config/logback/logback-springboot-dev.xml
+  #控制台打印sql语句
+  level:
+    root: info
+    
+#文件上传的路径配置
+imgUploadConfig:
+  product-image-file: /fileUpLoad/product_img
+  partner-image-file: /fileUpLoad/partner_img
+  img-pattern: image/jpeg,image/png
