@@ -63,9 +63,9 @@ tr:nth-child(even){background: #f5fafe;}
 .accountTable tr td:nth-child(2) input[type="text"]{width:88%;}
 .accountTable tr .text_h{height:100px;line-height:82px;}
 .accountTable tr .text_h .text_pic span{display:inline-block;}
-.accountTable tr .text_h .text_pic .text_picWrap{width:82px;height:82px;margin-right:20px;background:url(../../imgs/add_bg.png) 0 0 no-repeat;background-size:100%;}
-.accountTable tr td .text_imgBtn{width:82px;height:82px;cursor:pointer;border:1px solid #ccc;background:url(../../imgs/addimgb.png) 0 0 no-repeat;background-size:100%;}
-.accountTable tr td .text_imgBtn:hover{background:url(../../imgs/addimgc.png) 0 0 no-repeat;background-size:100%;}
+.accountTable tr .text_h .text_pic .text_picWrap{width:82px;height:82px;margin-right:20px;background:url(../imgs/add_bg.png) 0 0 no-repeat;background-size:100%;}
+.accountTable tr td .text_imgBtn{width:82px;height:82px;cursor:pointer;border:1px solid #ccc;background:url(../imgs/addimgb.png) 0 0 no-repeat;background-size:100%;}
+.accountTable tr td .text_imgBtn:hover{background:url(../imgs/addimgc.png) 0 0 no-repeat;background-size:100%;}
 .accountTable tr .text_h .text_pic img{width:82px !important;height:84px !important;}
 .text_mark {margin-left:10px;}
 .text_label {margin-right:40px;}
