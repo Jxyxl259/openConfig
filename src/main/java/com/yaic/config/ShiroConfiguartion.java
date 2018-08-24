@@ -100,8 +100,8 @@ public class ShiroConfiguartion {
 		filterChainDefinitionMap.put("/user/**", "authc");
 		filterChainDefinitionMap.put("/home", "authc");
 
-		// 需要校验权限的
-		filterChainDefinitionMap.put("/**/menu", "menu");
+		// 左侧菜单权限获取
+		filterChainDefinitionMap.put("/resource/menu", "menu");
 
 		// 此Url为真正执行登录验证的链接
 		filterChainDefinitionMap.put("/doLogin", "authc");
