@@ -19,10 +19,10 @@ import com.yaic.common.GlobalMessageEnum;
 import com.yaic.platform.common.ReturnMsg;
 import com.yaic.platform.common.ReturnMsgData;
 import com.yaic.platform.dto.ProductDto;
-import com.yaic.platform.entity.Partner;
+import com.yaic.platform.entity.Product;
 import com.yaic.platform.service.ProductService;
-import com.yaic.platform.utils.ImageUtils;
-import com.yaic.platform.utils.ReturnMsgUtils;
+import com.yaic.utils.ImageUtils;
+import com.yaic.utils.ReturnMsgUtils;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -45,7 +45,7 @@ public class ProductController {
 
 		logger.debug("getList productDto_param:{}", JSON.toJSONString(productDto));
 
-		Page<Partner> page = PageHelper.startPage(productDto.getPageNum(), productDto.getPageSize());
+		Page<Product> page = PageHelper.startPage(productDto.getPageNum(), productDto.getPageSize());
 		productService.getList(productDto);
 
 		// 封装返回结果为统一格式JSON

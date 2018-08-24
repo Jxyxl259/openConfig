@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yaic.system.dao.UserRoleDao">
+  <resultMap id="BaseResultMap" type="com.yaic.system.entity.UserRole">
+    <id column="USER_ROLE_ID" jdbcType="VARCHAR" property="userRoleId" />
+    <result column="CREATED_DATE" jdbcType="TIMESTAMP" property="createdDate" />
+    <result column="CREATED_BY" jdbcType="VARCHAR" property="createdBy" />
+    <result column="UPDATED_DATE" jdbcType="TIMESTAMP" property="updatedDate" />
+    <result column="UPDATED_BY" jdbcType="VARCHAR" property="updatedBy" />
+    <result column="USER_ID" jdbcType="VARCHAR" property="userId" />
+    <result column="ROLE_ID" jdbcType="VARCHAR" property="roleId" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    USER_ROLE_ID, CREATED_DATE, CREATED_BY, UPDATED_DATE, UPDATED_BY, USER_ID, ROLE_ID
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from app_user_role
+    where USER_ROLE_ID = #{userRoleId,jdbcType=VARCHAR}
+  </select>
+  
+  
+  
+  <select id="getBindRoleByUserId" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from app_user_role
+   where USER_ID = #{userId,jdbcType=VARCHAR}
+  </select>
+  
+  <delete id="deleteByUserId" parameterType="java.lang.String">
+    delete from app_user_role
+    where USER_ID = #{userId,jdbcType=VARCHAR}
+  </delete>
+  
+  	<insert id="saveUserRole" parameterType="java.util.List">
+		INSERT INTO app_user_role
+		(CREATED_DATE, CREATED_BY,UPDATED_DATE, UPDATED_BY,ROLE_ID, USER_ID, USER_ROLE_ID)
+		VALUES
+		<foreach collection="list" index="index" item="item"
+			separator=",">
+			(#{item.createdDate,jdbcType=TIMESTAMP},#{item.createdBy,jdbcType=VARCHAR},#{item.updatedDate,jdbcType=TIMESTAMP},
+			#{item.updatedBy,jdbcType=VARCHAR},#{item.roleId,jdbcType=VARCHAR},#{item.userId,jdbcType=VARCHAR},#{item.userRoleId,jdbcType=VARCHAR})
+		</foreach>
+	</insert>
+  
+  
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from app_user_role
+    where USER_ROLE_ID = #{userRoleId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.yaic.system.entity.UserRole">
+    insert into app_user_role (USER_ROLE_ID, CREATED_DATE, CREATED_BY, 
+      UPDATED_DATE, UPDATED_BY, USER_ID, 
+      ROLE_ID)
+    values (#{userRoleId,jdbcType=VARCHAR}, #{createdDate,jdbcType=TIMESTAMP}, #{createdBy,jdbcType=VARCHAR}, 
+      #{updatedDate,jdbcType=TIMESTAMP}, #{updatedBy,jdbcType=VARCHAR}, #{userId,jdbcType=VARCHAR}, 
+      #{roleId,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.yaic.system.entity.UserRole">
+    insert into app_user_role
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="userRoleId != null">
+        USER_ROLE_ID,
+      </if>
+      <if test="createdDate != null">
+        CREATED_DATE,
+      </if>
+      <if test="createdBy != null">
+        CREATED_BY,
+      </if>
+      <if test="updatedDate != null">
+        UPDATED_DATE,
+      </if>
+      <if test="updatedBy != null">
+        UPDATED_BY,
+      </if>
+      <if test="userId != null">
+        USER_ID,
+      </if>
+      <if test="roleId != null">
+        ROLE_ID,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="userRoleId != null">
+        #{userRoleId,jdbcType=VARCHAR},
+      </if>
+      <if test="createdDate != null">
+        #{createdDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createdBy != null">
+        #{createdBy,jdbcType=VARCHAR},
+      </if>
+      <if test="updatedDate != null">
+        #{updatedDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatedBy != null">
+        #{updatedBy,jdbcType=VARCHAR},
+      </if>
+      <if test="userId != null">
+        #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="roleId != null">
+        #{roleId,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yaic.system.entity.UserRole">
+    update app_user_role
+    <set>
+      <if test="createdDate != null">
+        CREATED_DATE = #{createdDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createdBy != null">
+        CREATED_BY = #{createdBy,jdbcType=VARCHAR},
+      </if>
+      <if test="updatedDate != null">
+        UPDATED_DATE = #{updatedDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatedBy != null">
+        UPDATED_BY = #{updatedBy,jdbcType=VARCHAR},
+      </if>
+      <if test="userId != null">
+        USER_ID = #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="roleId != null">
+        ROLE_ID = #{roleId,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where USER_ROLE_ID = #{userRoleId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.yaic.system.entity.UserRole">
+    update app_user_role
+    set CREATED_DATE = #{createdDate,jdbcType=TIMESTAMP},
+      CREATED_BY = #{createdBy,jdbcType=VARCHAR},
+      UPDATED_DATE = #{updatedDate,jdbcType=TIMESTAMP},
+      UPDATED_BY = #{updatedBy,jdbcType=VARCHAR},
+      USER_ID = #{userId,jdbcType=VARCHAR},
+      ROLE_ID = #{roleId,jdbcType=VARCHAR}
+    where USER_ROLE_ID = #{userRoleId,jdbcType=VARCHAR}
+  </update>
+</mapper>

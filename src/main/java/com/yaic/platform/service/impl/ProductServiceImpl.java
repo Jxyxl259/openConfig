@@ -19,8 +19,8 @@ import com.yaic.platform.dao.ProductDao;
 import com.yaic.platform.dto.ProductDto;
 import com.yaic.platform.entity.Product;
 import com.yaic.platform.service.ProductService;
-import com.yaic.platform.utils.BeanCopyUtils;
-import com.yaic.platform.utils.ImageUtils;
+import com.yaic.utils.BeanCopyUtils;
+import com.yaic.utils.ImageUtils;
 
 @Service
 public class ProductServiceImpl implements ProductService {

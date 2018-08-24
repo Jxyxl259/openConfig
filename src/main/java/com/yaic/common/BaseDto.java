@@ -1,4 +1,4 @@
-package com.yaic.platform.dto;
+package com.yaic.common;
 
 /**
  *

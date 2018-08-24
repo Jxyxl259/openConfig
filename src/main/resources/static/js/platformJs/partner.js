@@ -228,7 +228,7 @@ var PartnerCommon = {
             layer.open({
                 type : 1,
                 title : ["添加合作伙伴信息"],
-                area : [ '700px', '350px' ],
+                area : [ '700px', '470px' ],
                 content : $("#addFromDiv"),
                 btn:["添加"],
                 yes : function(index, dom){

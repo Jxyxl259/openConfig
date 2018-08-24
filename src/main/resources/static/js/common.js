@@ -52,7 +52,12 @@ var conditionQuery = function (url) {
         success:function(resultMsg){
             if(resultMsg.success){
                 result = resultMsg.data;
-                data = result.dataList;
+                if(result == null){
+                	data = new Array();
+                }else{
+                	data = result.dataList;
+                }
+                
                 commonObj.tabInit("#tableId");
                 paginationInfo(result);
             }else{
@@ -114,6 +119,9 @@ var gotoTargetPage = function(btn){
 
 /** 分页信息*/
 var paginationInfo = function(result){
+	if(result == null){
+    	return false;
+    }
     var currentPage = result.pageNum;
     var pageTotal = result.pages;
     var pageSize = result.pageSize;

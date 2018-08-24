@@ -2,29 +2,24 @@ package com.yaic.common;
 
 /**
  * @Description : 通用常量
- * @author : jiangxy
- * @CreateDate : 2018-07-16 19:24:25
- *
  */
-public class CommonConstant {
+public interface CommonConstant {
 
-	/**
-	 * 不执行分页标识，返回查询的全部结果
-	 */
-	public static final Integer NO_PAGENATION = 0;
+	/** 登录模块使用的常亮 */
+	interface loginUser{
+		public static final String LOGIN_USER_NAME = "LOGIN_USER_NAME";
+		public static final String LOGIN_USER_ID = "LOGIN_USER_ID";
+		public static final String LOGIN_USER_INFO = "LOGIN_USER_INFO";
+		
+		public static final String ALGORITHM_NAME= "SHA1";
+		public static final int HASH_ITERATIONS= 2;
+		public static final String SALT = "sns";
+	}
 
-
-	/**
-	 * 合作伙伴模块
-	 */
-	public static final String PARTNER_MODULE = "partner";
-
-
-	/**
-	 * 产品展示维护模块
-	 */
-	public static final String PRODUCT_MODULE = "product";
-
+	/** 左侧菜单权限控制模块使用的常量 */
+	public static final String GRANTED_RESOURCES = "granted_resources";
+	public static final String BIND_MENU_RESOURCES = "bind_menu_resources";
+	public static final String BIND_MENU_RESOURCES_ROLE = "login_user";
 
 
 }

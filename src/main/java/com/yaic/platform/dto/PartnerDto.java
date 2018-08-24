@@ -4,6 +4,8 @@ import java.util.Date;
 
 import org.hibernate.validator.constraints.NotBlank;
 
+import com.yaic.common.BaseDto;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 

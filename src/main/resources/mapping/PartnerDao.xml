@@ -39,7 +39,7 @@
     from t_platform_partner
     <trim prefix="where" prefixOverrides="AND|OR">
       <if test="partnerName != null and partnerName != ''" >
-        and partner_name like  concat( #{partnerName,jdbcType=VARCHAR} , '%')
+        and partner_name like  concat('%', #{partnerName,jdbcType=VARCHAR} , '%')
       </if>
       <if test="partnerInvalid != null and partnerInvalid != ''" >
         and partner_invalid = #{partnerInvalid,jdbcType=CHAR}

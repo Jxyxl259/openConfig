@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="renderer" content="webkit|ie-comp|ie-stand">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta http-equiv="Cache-Control" content="no-siteapp" />
+	<link rel="stylesheet" type="text/css" href="../../css/index.css" />
+	<link rel="stylesheet" href="../../lib/zTree/v3/css/zTreeStyle/zTreeStyle.css" type="text/css">
+	
+	<title>资源管理</title>
+	<style type="text/css">
+	.ztree li span.button.add{margin-right:2px;background-position:-144px 0;vertical-align:top;*vertical-align:middle}
+	.ztreeWrap{margin:20px;}
+	.ztree li span.button.add {
+		margin-left: 2px;
+		margin-right: -1px;
+		background-position: -144px 0;
+		vertical-align: top;
+		*vertical-align: middle
+		
+	}
+	</style>
+</head>
+<body>
+	<div class="page-container">
+		<div class="cl pd-5 bg-1 bk-gray  ztreeWrap">
+	        <div class="zTreeDemoBackground left">  
+	            <ul id="treeDemo" class="ztree"></ul>  
+	        </div>  
+		</div>
+	</div>	
+
+	<div id="showModelWin" style="display:none;">
+	    <form id="addResourceForm">
+	        <table class="table table-border  table-bg" style="border: 0 !important; border-collapse: separate;" id="accountTable">
+	            <tbody>
+	                <tr>
+	                    <td width="20%" class="text-r" style="text-align: right !important; padding: 8px; line-height: 20px; word-break: break-all;">
+	                        <font style="color: red">*</font>资源名称:</td>
+	                    <td width="45%" style="text-align: right !important; padding: 8px; line-height: 20px; word-break: break-all;">
+	                        <input name="resourceName"  class="input-text disableY notNull rightName maxLength20" type="text" value=""></td>
+	                    <td width="33%">&nbsp;</td></tr>
+	                <tr>
+	                    <td class="text-r" width="20%" style="text-align: right !important; padding: 8px; line-height: 20px; word-break: break-all;">
+	                        <font style="color: red">*</font>资源URL:</td>
+	                    <td style="text-align: right !important; padding: 8px; line-height: 20px; word-break: break-all;">
+	                        <input name="actionUrl"  class="input-text disableY notNull rightCode maxLength100" type="text" value=""></td>
+	                    <td>&nbsp;</td></tr>
+	                <tr>
+	                    <td class="text-r" width="20%" style="text-align: right !important; padding: 8px; line-height: 20px; word-break: break-all;">
+	                        <font style="color: red">*</font>资源样式:</td>
+	                    <td style="text-align: right !important; padding: 8px; line-height: 20px; word-break: break-all;">
+	                        <input name="resourceIconClass"  class="input-text disableN" type="text" value=""></td>
+	                    <td>&nbsp;</td></tr>
+	                <tr>
+	                    <td class="text-r" width="20%" style="text-align: right !important; padding: 8px; line-height: 20px; word-break: break-all;">
+	                        <font style="color: red">*</font>资源类别:</td>
+	                    <td style="text-align: right !important; padding: 8px; line-height: 20px; word-break: break-all;">
+	                        <input name="resourceType"  class="input-text disableN" type="text" value=""></td>
+	                    <td>&nbsp;</td></tr>
+	                <tr>
+	                    <td class="text-r" width="20%" style="text-align: right !important; padding: 8px; line-height: 20px; word-break: break-all;">
+	                        <font style="color: red">*</font>显示顺序:</td>
+	                    <td style="text-align: right !important; padding: 8px; line-height: 20px; word-break: break-all;">
+	                        <input name="displayOrder"  class="input-text disableN" type="text" value=""></td>
+	                    <td>&nbsp;</td></tr>
+	            </tbody>
+	        </table>
+	    </form>
+	</div>
+
+	<script type="text/javascript" src="../../lib/jquery/1.9.1/jquery.min.js"></script> 
+	<script type="text/javascript" src="../../lib/layer/2.4/layer.js"></script>
+	<script type="text/javascript" src="../../lib/zTree/v3/js/jquery.ztree.core-3.5.min.js"></script>
+	<script type="text/javascript" src="../../lib/zTree/v3/js/jquery.ztree.exedit-3.5.min.js"></script>
+	<script type="text/javascript" src="../../lib/zTree/v3/js/jquery.ztree.excheck-3.5.min.js"></script>
+	<!--请在下方写此页面业务相关的脚本-->
+	<script type="text/javascript" src="../../js/systemJs/resource.js"></script>
+
+</body>
+</html>

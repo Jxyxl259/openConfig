@@ -22,6 +22,7 @@ public enum GlobalMessageEnum {
 
 	// 数据库交互
 	DATABASE_INTERACTIVE_FAILED(5000,"数据操作失败"),
+	DATABASE_NO_DATA(5001,"没有查到相关数据"),
 	
 	//删除相关操作提示
 	DELETE_OPERATION_6001(6001, "操作数据个数不一致，请联系管理员核对信息"),

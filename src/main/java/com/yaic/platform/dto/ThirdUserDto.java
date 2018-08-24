@@ -4,7 +4,7 @@ import io.swagger.annotations.ApiModel;
 import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.Range;
 
-import com.yaic.platform.dto.BaseDto;
+import com.yaic.common.BaseDto;
 
 import javax.validation.constraints.Size;
 import java.util.Date;

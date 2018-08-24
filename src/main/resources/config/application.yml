@@ -6,6 +6,7 @@ server:
     max-threads: 10 
     min-spare-threads: 10
   connection-timeout: 5000
+  
 
 spring:
   profiles:
@@ -14,16 +15,13 @@ spring:
     #关闭默认图标
     favicon:
       enabled: false
-    view:
-      prefix: /WEB-INF/jsp/
-      suffix: .jsp
     static-path-pattern: /**
   resources:
     static-locations: classpath:/META-INF/resources/,classpath:/resources/,classpath:/static/,classpath:/public/,file:${imgUploadConfig.product-image-file},file:${imgUploadConfig.partner-image-file}
   http:
     encoding:
       charset: UTF-8
-      force: true
+      force: true 
     multipart:
       enabled: true
       max-file-size: 1MB
@@ -42,15 +40,22 @@ spring:
       test-on-return: false
       pool-prepared-statements: true
       max-pool-prepared-statement-per-connection-size: 20
-      filters: stat,wall,log4j
-      connection-properties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=3000
+      filters: stat,wall,log4j,config
+      connection-properties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=3000,config.decrypt=true;config.decrypt.key=${public-key}
       use-global-data-source-stat: true
+
   jackson:  
     time-zone: GMT+8
     date-format: yyyy-MM-dd HH:mm:ss
+  thymeleaf:
+    cache: false
+    prefix: classpath:/static/
+    suffix: .html
+
     
     
-  
+public-key: h28JBy5qVFdXipoUUOkwigqOTaZkjd6uVHGUqC8QajwWWeEc1XcNGfvE5Kda5xzfdwCJsyut1lToe48EIcm2MA== 
+
 #监控范围
 #      aop-patterns: com.yaic.auth.*
 #      stat-view-servlet:

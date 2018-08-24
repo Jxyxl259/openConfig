@@ -1,7 +1,6 @@
 package com.yaic;
 
 import org.junit.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 
 
 public class DruidTest extends MainApplicationTest {

@@ -1,0 +1,20 @@
+@charset "utf-8";
+/* 你自己的样式 */
+@import url(../static/h-ui/css/H-ui.min.css);
+@import url(../static/h-ui.admin/css/H-ui.admin.css);
+@import url(../lib/Hui-iconfont/1.0.8/iconfont.css);
+/*menu style s  */
+.navbar{background:#403f44;}
+.Hui-aside{background-color:#403f44;}
+.Hui-aside .menu_dropdown dt{color:#fff;}
+.Hui-aside .menu_dropdown dt .Hui-iconfont{color:#fff;}
+.Hui-aside .menu_dropdown li a{color:#ccc;}
+.Hui-aside .menu_dropdown .menu_li  a {color:#fcc700; background: #4a494e;}
+.selected{border-left:5px solid #fcc700;}
+.Hui-aside .menu_dropdown dt:hover{color:#fcc700;}
+.Hui-aside .menu_dropdown li a:hover{color:#fcc700;background-color: #4a494e;}
+/*menu style e  */
+/*nav s*/
+.Hui-article{top:65px;}
+.Hui_nav .breadcrumb{top:-2px;}
+/*nav e*/

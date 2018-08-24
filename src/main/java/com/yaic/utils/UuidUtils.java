@@ -1,4 +1,4 @@
-package com.yaic.platform.utils;
+package com.yaic.utils;
 
 import java.util.Random;
 import java.util.UUID;

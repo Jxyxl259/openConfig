@@ -1,4 +1,4 @@
-package com.yaic.platform.utils;
+package com.yaic.utils;
 
 import com.github.pagehelper.Page;
 import com.yaic.platform.common.ReturnMsgData;

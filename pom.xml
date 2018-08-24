@@ -7,7 +7,7 @@
 	<name>openConfig</name>
 	<description>eAnOPEN background system project</description>
 
-	<packaging>jar</packaging>
+	<packaging>war</packaging>
 
 	<parent>  
 		<groupId>org.springframework.boot</groupId>  
@@ -25,7 +25,9 @@
 		<fastJson.version>1.2.45</fastJson.version>
 		<shiro.version>1.4.0</shiro.version>
 		<swagger2.version>2.7.0</swagger2.version>
-		<platform.version>1.0.3-SNAPSHOT</platform.version>
+		<platform.version>1.0.3</platform.version>
+		<thymeleaf.version>3.0.2.RELEASE</thymeleaf.version>
+		<thymeleaf-layout-dialect.version>2.1.1</thymeleaf-layout-dialect.version>
 	</properties>
 	
 	<dependencies>
@@ -39,6 +41,12 @@
 					<artifactId>spring-boot-starter-tomcat</artifactId>
 				</exclusion>
 			</exclusions>
+		</dependency>
+
+		<!-- thymeleaf -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-thymeleaf</artifactId>
 		</dependency>
 		<!-- 使用外部 Servlet容器 -->
 		<dependency>
@@ -57,12 +65,12 @@
 			<optional>true</optional>
 		</dependency>
 		<!-- SpringBoot热部署 -->
-		<dependency>
+		<!--<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-devtools</artifactId>
 			<optional>true</optional>
 			<scope>true</scope>
-		</dependency>
+		</dependency>-->
 		
 		<!-- 数据库mysql配置 -->
 		<dependency>  
@@ -186,11 +194,6 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
-				<configuration>
-					<!-- 没有该配置，热部署devtools 不生效 -->
-					<fork>true</fork>
-					<addResources>true</addResources>
-				</configuration>
 			</plugin>
 		</plugins>
 	</build>

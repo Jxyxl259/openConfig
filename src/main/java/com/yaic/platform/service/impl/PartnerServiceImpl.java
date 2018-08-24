@@ -19,8 +19,8 @@ import com.yaic.platform.dao.PartnerDao;
 import com.yaic.platform.dto.PartnerDto;
 import com.yaic.platform.entity.Partner;
 import com.yaic.platform.service.PartnerService;
-import com.yaic.platform.utils.BeanCopyUtils;
-import com.yaic.platform.utils.ImageUtils;
+import com.yaic.utils.BeanCopyUtils;
+import com.yaic.utils.ImageUtils;
 
 @Service
 public class PartnerServiceImpl implements PartnerService {

@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yaic.system.dao.ResourceDao">
+  <resultMap id="BaseResultMap" type="com.yaic.system.entity.Resource">
+    <id column="RESOURCE_ID" jdbcType="VARCHAR" property="resourceId" />
+    <result column="CREATED_DATE" jdbcType="TIMESTAMP" property="createdDate" />
+    <result column="CREATED_BY" jdbcType="VARCHAR" property="createdBy" />
+    <result column="UPDATED_DATE" jdbcType="TIMESTAMP" property="updatedDate" />
+    <result column="UPDATED_BY" jdbcType="VARCHAR" property="updatedBy" />
+    <result column="RESOURCE_NAME" jdbcType="VARCHAR" property="resourceName" />
+    <result column="RESOURCE_TYPE" jdbcType="VARCHAR" property="resourceType" />
+    <result column="RESOURCE_LEVEL" jdbcType="DECIMAL" property="resourceLevel" />
+    <result column="PARENT_RESOURCE_ID" jdbcType="VARCHAR" property="parentResourceId" />
+    <result column="RESOURCE_ICON_CLASS" jdbcType="VARCHAR" property="resourceIconClass" />
+    <result column="ACTION_URL" jdbcType="VARCHAR" property="actionUrl" />
+    <result column="END_FLAG" jdbcType="CHAR" property="endFlag" />
+    <result column="DISPLAY_ORDER" jdbcType="INTEGER" property="displayOrder" />
+  </resultMap>
+
+  <resultMap id="resourceDtoMap" type="com.yaic.system.entity.Resource">
+    <id column="RESOURCE_ID" jdbcType="VARCHAR" property="resourceId" />
+    <result column="RESOURCE_NAME" jdbcType="VARCHAR" property="resourceName" />
+    <result column="RESOURCE_TYPE" jdbcType="VARCHAR" property="resourceType" />
+    <result column="RESOURCE_LEVEL" jdbcType="DECIMAL" property="resourceLevel" />
+    <result column="PARENT_RESOURCE_ID" jdbcType="VARCHAR" property="parentResourceId" />
+    <result column="RESOURCE_ICON_CLASS" jdbcType="VARCHAR" property="resourceIconClass" />
+    <result column="ACTION_URL" jdbcType="VARCHAR" property="actionUrl" />
+    <result column="END_FLAG" jdbcType="CHAR" property="endFlag" />
+    <result column="DISPLAY_ORDER" jdbcType="INTEGER" property="displayOrder" />
+  </resultMap>
+
+
+  <sql id="Base_Column_List">
+    RESOURCE_ID, CREATED_DATE, CREATED_BY, UPDATED_DATE, UPDATED_BY, RESOURCE_NAME, RESOURCE_TYPE, 
+    RESOURCE_LEVEL, PARENT_RESOURCE_ID, RESOURCE_ICON_CLASS, ACTION_URL, END_FLAG, DISPLAY_ORDER
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from app_resource
+    where RESOURCE_ID = #{resourceId,jdbcType=VARCHAR}
+  </select>
+  
+   <select id="getListByPid" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from app_resource
+    where PARENT_RESOURCE_ID = #{resourceId,jdbcType=VARCHAR}
+    ORDER BY DISPLAY_ORDER ASC
+  </select>
+  
+   <select id="queryMaxIdByParentId" parameterType="java.lang.String" resultType="java.lang.String">
+    select 
+   		MAX(RESOURCE_ID)
+    from app_resource
+    where PARENT_RESOURCE_ID = #{resourceId,jdbcType=VARCHAR}
+  </select>
+  
+  <select id="selectAllBySelective" parameterType="com.yaic.system.entity.Resource" resultMap="BaseResultMap">
+  	select 
+    <include refid="Base_Column_List" />
+    from app_resource
+    <trim prefix="where" prefixOverrides="AND|OR">
+      <if test="resourceId != null and resourceId != ''" >
+         and RESOURCE_ID = #{resourceId,jdbcType=VARCHAR}
+      </if>
+      <if test="resourceName != null and resourceName != ''" >
+        and RESOURCE_NAME like concat('%', #{resourceName,jdbcType=VARCHAR} , '%')
+      </if>
+      <if test="resourceType != null and resourceType != ''" >
+        and RESOURCE_TYPE = #{resourceType,jdbcType=VARCHAR}
+      </if>
+    </trim>
+    order by CREATED_DATE desc
+  </select>
+
+  <select id="selectResourcesByRoleIds" parameterType="java.util.List" resultMap="resourceDtoMap">
+      select
+        RESOURCE_ID, RESOURCE_NAME, RESOURCE_TYPE,
+        RESOURCE_LEVEL, PARENT_RESOURCE_ID,
+        RESOURCE_ICON_CLASS, ACTION_URL, END_FLAG, DISPLAY_ORDER
+      from
+        app_resource r
+      where
+        r.RESOURCE_ID in (
+          select
+            RESOURCE_ID
+          from
+            app_role_resource rr
+          where rr.ROLE_ID in(
+            <foreach collection="array" separator="," item="roleId">
+              #{roleId}
+            </foreach>
+          )
+        )
+
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from app_resource
+    where RESOURCE_ID = #{resourceId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.yaic.system.entity.Resource">
+    insert into app_resource (RESOURCE_ID, CREATED_DATE, CREATED_BY, 
+      UPDATED_DATE, UPDATED_BY, RESOURCE_NAME, 
+      RESOURCE_TYPE, RESOURCE_LEVEL, PARENT_RESOURCE_ID, 
+      RESOURCE_ICON_CLASS, ACTION_URL, END_FLAG, 
+      DISPLAY_ORDER)
+    values (#{resourceId,jdbcType=VARCHAR}, #{createdDate,jdbcType=TIMESTAMP}, #{createdBy,jdbcType=VARCHAR}, 
+      #{updatedDate,jdbcType=TIMESTAMP}, #{updatedBy,jdbcType=VARCHAR}, #{resourceName,jdbcType=VARCHAR}, 
+      #{resourceType,jdbcType=VARCHAR}, #{resourceLevel,jdbcType=DECIMAL}, #{parentResourceId,jdbcType=VARCHAR}, 
+      #{resourceIconClass,jdbcType=VARCHAR}, #{actionUrl,jdbcType=VARCHAR}, #{endFlag,jdbcType=CHAR}, 
+      #{displayOrder,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.yaic.system.entity.Resource">
+    insert into app_resource
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="resourceId != null">
+        RESOURCE_ID,
+      </if>
+      <if test="createdDate != null">
+        CREATED_DATE,
+      </if>
+      <if test="createdBy != null">
+        CREATED_BY,
+      </if>
+      <if test="updatedDate != null">
+        UPDATED_DATE,
+      </if>
+      <if test="updatedBy != null">
+        UPDATED_BY,
+      </if>
+      <if test="resourceName != null">
+        RESOURCE_NAME,
+      </if>
+      <if test="resourceType != null">
+        RESOURCE_TYPE,
+      </if>
+      <if test="resourceLevel != null">
+        RESOURCE_LEVEL,
+      </if>
+      <if test="parentResourceId != null">
+        PARENT_RESOURCE_ID,
+      </if>
+      <if test="resourceIconClass != null">
+        RESOURCE_ICON_CLASS,
+      </if>
+      <if test="actionUrl != null">
+        ACTION_URL,
+      </if>
+      <if test="endFlag != null">
+        END_FLAG,
+      </if>
+      <if test="displayOrder != null">
+        DISPLAY_ORDER,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="resourceId != null">
+        #{resourceId,jdbcType=VARCHAR},
+      </if>
+      <if test="createdDate != null">
+        #{createdDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createdBy != null">
+        #{createdBy,jdbcType=VARCHAR},
+      </if>
+      <if test="updatedDate != null">
+        #{updatedDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatedBy != null">
+        #{updatedBy,jdbcType=VARCHAR},
+      </if>
+      <if test="resourceName != null">
+        #{resourceName,jdbcType=VARCHAR},
+      </if>
+      <if test="resourceType != null">
+        #{resourceType,jdbcType=VARCHAR},
+      </if>
+      <if test="resourceLevel != null">
+        #{resourceLevel,jdbcType=DECIMAL},
+      </if>
+      <if test="parentResourceId != null">
+        #{parentResourceId,jdbcType=VARCHAR},
+      </if>
+      <if test="resourceIconClass != null">
+        #{resourceIconClass,jdbcType=VARCHAR},
+      </if>
+      <if test="actionUrl != null">
+        #{actionUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="endFlag != null">
+        #{endFlag,jdbcType=CHAR},
+      </if>
+      <if test="displayOrder != null">
+        #{displayOrder,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yaic.system.entity.Resource">
+    update app_resource
+    <set>
+      <if test="createdDate != null">
+        CREATED_DATE = #{createdDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createdBy != null">
+        CREATED_BY = #{createdBy,jdbcType=VARCHAR},
+      </if>
+      <if test="updatedDate != null">
+        UPDATED_DATE = #{updatedDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatedBy != null">
+        UPDATED_BY = #{updatedBy,jdbcType=VARCHAR},
+      </if>
+      <if test="resourceName != null">
+        RESOURCE_NAME = #{resourceName,jdbcType=VARCHAR},
+      </if>
+      <if test="resourceType != null">
+        RESOURCE_TYPE = #{resourceType,jdbcType=VARCHAR},
+      </if>
+      <if test="resourceLevel != null">
+        RESOURCE_LEVEL = #{resourceLevel,jdbcType=DECIMAL},
+      </if>
+      <if test="parentResourceId != null">
+        PARENT_RESOURCE_ID = #{parentResourceId,jdbcType=VARCHAR},
+      </if>
+      <if test="resourceIconClass != null">
+        RESOURCE_ICON_CLASS = #{resourceIconClass,jdbcType=VARCHAR},
+      </if>
+      <if test="actionUrl != null">
+        ACTION_URL = #{actionUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="endFlag != null">
+        END_FLAG = #{endFlag,jdbcType=CHAR},
+      </if>
+      <if test="displayOrder != null">
+        DISPLAY_ORDER = #{displayOrder,jdbcType=INTEGER},
+      </if>
+    </set>
+    where RESOURCE_ID = #{resourceId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.yaic.system.entity.Resource">
+    update app_resource
+    set CREATED_DATE = #{createdDate,jdbcType=TIMESTAMP},
+      CREATED_BY = #{createdBy,jdbcType=VARCHAR},
+      UPDATED_DATE = #{updatedDate,jdbcType=TIMESTAMP},
+      UPDATED_BY = #{updatedBy,jdbcType=VARCHAR},
+      RESOURCE_NAME = #{resourceName,jdbcType=VARCHAR},
+      RESOURCE_TYPE = #{resourceType,jdbcType=VARCHAR},
+      RESOURCE_LEVEL = #{resourceLevel,jdbcType=DECIMAL},
+      PARENT_RESOURCE_ID = #{parentResourceId,jdbcType=VARCHAR},
+      RESOURCE_ICON_CLASS = #{resourceIconClass,jdbcType=VARCHAR},
+      ACTION_URL = #{actionUrl,jdbcType=VARCHAR},
+      END_FLAG = #{endFlag,jdbcType=CHAR},
+      DISPLAY_ORDER = #{displayOrder,jdbcType=INTEGER}
+    where RESOURCE_ID = #{resourceId,jdbcType=VARCHAR}
+  </update>
+</mapper>

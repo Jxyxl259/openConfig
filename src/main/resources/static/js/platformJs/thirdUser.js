@@ -127,7 +127,8 @@ var commonObj = {
                 var obj_text = $(this).find("input:text");
                 var obj_select = $(this).find("select");
                 var text_select = "<select class='tab_select'><option value='0'>是</option><option value='1'>否</option></select>";
-                //console.log(a,b)
+                console.log(a)
+                 console.log(b)
                 obj_option = $(this).find("option:selected").html();
                 if(!obj_text.length && !obj_select.length){
                     if($(this).text() === 'x' || $(this).text() === '√') {
@@ -252,7 +253,7 @@ var commonObj = {
                 +'</ul>';
             layer.open({
                 type :1,
-                title: ['查看详情', 'background-color:#f5fafe;font-size:18px;height:60px;line-height:60px'],
+                title: ['查看详情'],
                 fixed : true,                   // 不固定
                 shadeClose : false,             // 点击遮罩关闭层
                 area : [ '700px', '470px' ],

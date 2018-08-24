@@ -2,6 +2,30 @@
 server:
   port: 8083
  #context-path: /openconfig
+  connection-timeout: 5000
+  tomcat:
+    uri-encoding: UTF-8
+    #允许最大线程数
+    max-threads: 2000
+    #最大排队数
+    accept-count: 1000
+    min-spare-threads: 200
+    max-connections: 5000
+    
+    accesslog:
+      enabled: true
+      #文件格式 %t %a "%r" %s (%D ms)
+      pattern: pattern=remote_ip=%a local_ip=%A bytes=%b Bytes=%B  protocol=%H method=%m port=%p  url=%r code=%s sessionid=%S date=%t  millis=%D threadid=%I
+      #前缀
+      prefix: access_log
+      rename-on-rotate: true
+      request-attributes-enabled: false
+      #日志切换
+      rotate: true
+      #缓冲输出 定期刷新
+      buffered: true
+      suffix: .log
+      directory: /app/logs/tomcat
 
 #mysql jdbc
 spring:
@@ -13,18 +37,18 @@ spring:
     username: dev_open
     password: 1qaz@WSX
   #springBoot开启热部署
-  devtools:
-    restart:
-    #热部署生效
-      enabled: false
-      #设置重启的目录
-      additional-paths: src/main/java
-      #classpath目录下的WEB-INF文件夹内容修改不重启
-      exclude: WEB-INF/**  
+  #devtools:
+  #  restart:
+  #  #热部署生效
+  #    enabled: true
+  #    #设置重启的目录
+  #    additional-paths: src/main/java
+  #    #classpath目录下的WEB-INF文件夹内容修改不重启
+  #    exclude: WEB-INF/**
 
 logging:
   #加载日志文件
-  config: classpath:config/logback/logback-springboot-dev.xml
+  config: classpath:config/logback/logback-springboot.xml
   #控制台打印sql语句
   level:
     root: info

@@ -35,7 +35,7 @@
     from t_platform_account
     <trim prefix="where" prefixOverrides="AND|OR">
       <if test="accountName != null and accountName != ''" >
-        and account_name like concat( #{accountName,jdbcType=VARCHAR} , '%')
+        and account_name like concat('%', #{accountName,jdbcType=VARCHAR} , '%')
       </if>
       <if test="mobile != null and mobile != ''" >
         and mobile = #{mobile,jdbcType=VARCHAR}

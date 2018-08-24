@@ -15,7 +15,7 @@ import com.yaic.platform.dao.ThirdUserDao;
 import com.yaic.platform.dto.ThirdUserDto;
 import com.yaic.platform.entity.ThirdUser;
 import com.yaic.platform.service.ThirdUserAccountService;
-import com.yaic.platform.utils.BeanCopyUtils;
+import com.yaic.utils.BeanCopyUtils;
 
 
 @Service

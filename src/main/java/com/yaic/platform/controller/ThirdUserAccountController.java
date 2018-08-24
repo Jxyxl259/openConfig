@@ -1,34 +1,31 @@
 package com.yaic.platform.controller;
 
+import javax.validation.Valid;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 
+import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
-
 import com.yaic.common.GlobalMessageEnum;
 import com.yaic.platform.common.ReturnMsg;
 import com.yaic.platform.common.ReturnMsgData;
 import com.yaic.platform.dto.ThirdUserDto;
-import com.yaic.platform.entity.Partner;
+import com.yaic.platform.entity.ThirdUser;
 import com.yaic.platform.service.ThirdUserAccountService;
-import com.yaic.platform.utils.ReturnMsgUtils;
+import com.yaic.utils.ReturnMsgUtils;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
-
-import com.alibaba.fastjson.JSON;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.validation.Valid;
 
 
 @Api(value = "ThirdUserAccountController", description = "第三方用户接口")
@@ -47,7 +44,7 @@ public class ThirdUserAccountController{
 		
 		logger.debug("getPartnerList userAccount_param:{}", JSON.toJSONString(thirdUserDto));
 
-		Page<Partner> page = PageHelper.startPage(thirdUserDto.getPageNum(), thirdUserDto.getPageSize());
+		Page<ThirdUser> page = PageHelper.startPage(thirdUserDto.getPageNum(), thirdUserDto.getPageSize());
 		accountService.getList(thirdUserDto);
 
 		// 封装返回结果为统一格式JSON
