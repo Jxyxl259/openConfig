@@ -202,6 +202,13 @@ public class ShiroConfiguartion {
 			return false;
 		}
 
+        /**
+         * 处理登录用户重新登录问题
+         * @param request
+         * @param response
+         * @param mappedValue
+         * @return
+         */
 		@Override
 		protected boolean isAccessAllowed(ServletRequest request, ServletResponse response, Object mappedValue) {
 			if(super.isAccessAllowed(request, response, mappedValue)){
