@@ -3,7 +3,12 @@ package com.yaic.system.service.impl;
 import java.util.Date;
 import java.util.List;
 
+import com.yaic.common.CommonConstant;
 import org.apache.commons.lang.StringUtils;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.crypto.hash.SimpleHash;
+import org.apache.shiro.mgt.SecurityManager;
+import org.apache.shiro.util.ByteSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +22,9 @@ import com.yaic.system.entity.User;
 import com.yaic.system.service.UserService;
 import com.yaic.utils.BeanCopyUtils;
 import com.yaic.utils.UuidUtils;
+
+import static com.yaic.common.CommonConstant.loginUser.ALGORITHM_NAME;
+import static com.yaic.common.CommonConstant.loginUser.HASH_ITERATIONS;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -89,18 +97,19 @@ public class UserServiceImpl implements UserService {
 			// 数据入库
 			User user = new User();
 			BeanCopyUtils.beanCopy(userDto, user);
+			user.setPassword(encryptPassword(userDto));
 			user.setCreatedDate(new Date());
-			// TODO 待用户登录功能实现后再完善
-			user.setCreatedBy("admin");
-			
-			String userId = UuidUtils.getUuidByLength(20);
-			User emp_user = userDao.selectByPrimaryKey(userId);
-			if(emp_user == null) {
-				user.setUserId(userId);
-			}else {
-				user.setUserId(UuidUtils.getUuid());
-			}
-			
+			user.setCreatedBy(((User)SecurityUtils.getSubject().getPrincipal()).getUserCode());
+
+			String userId = "";
+			User emp_user = null;
+			do{
+				userId = UuidUtils.getUuidByLength(20);
+				emp_user = userDao.selectByPrimaryKey(userId);
+			}while(emp_user != null);
+
+			user.setUserId(userId);
+
 			int i = userDao.insertSelective(user);
 			if (i > 0) {
 				result.setSuccess(true);
@@ -119,6 +128,22 @@ public class UserServiceImpl implements UserService {
 		}
 		return result;
 	}
+
+
+	/**
+	 * 对密码进行加密
+	 * @param userDto
+	 * @return
+	 */
+	private String encryptPassword(UserDto userDto) {
+
+		ByteSource salt = ByteSource.Util.bytes(userDto.getUserCode() + "sns");
+
+		SimpleHash sh = new SimpleHash(ALGORITHM_NAME, userDto.getPassword(), salt, HASH_ITERATIONS);
+
+		return sh.toString();
+	}
+
 
 	@Override
 	public ReturnMsg getOneById(String id) {

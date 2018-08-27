@@ -138,7 +138,7 @@ public class ShiroRealm extends AuthorizingRealm {
 		        );
 		        
 		        Session session = SecurityUtils.getSubject().getSession();
-		        session.setTimeout(3600000);//一小束,毫秒单位
+		        session.setTimeout(3600000);//一小时,毫秒单位
 		        
 		        session.setAttribute(CommonConstant.loginUser.LOGIN_USER_NAME, userInfo.getUserCode());
 		        session.setAttribute(CommonConstant.loginUser.LOGIN_USER_ID,userInfo.getUserId());

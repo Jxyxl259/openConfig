@@ -83,7 +83,7 @@
         app_resource r
       where
         r.RESOURCE_ID in (
-          select
+          select distinct
             RESOURCE_ID
           from
             app_role_resource rr

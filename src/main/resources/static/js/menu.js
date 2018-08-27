@@ -13,7 +13,7 @@ $(function(){
             if(resultMsg.success){
                 menuArr = resultMsg.data;
 			}else{
-                layer.msg(result.message, {time: 2000, icon:5});
+                layer.msg(resultMsg.message, {time: 2000, icon:5});
             }
         },
         error:function(XMLHttpRequest, textStatus, errorThrown){

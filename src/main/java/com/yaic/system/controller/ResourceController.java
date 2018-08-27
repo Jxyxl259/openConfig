@@ -19,8 +19,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
-import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
 
 @RestController
 @RequestMapping("/resource")
@@ -35,7 +35,7 @@ public class ResourceController {
 	@RequestMapping(value="/menu", method= RequestMethod.GET, consumes = MediaType.ALL_VALUE)
 	public ReturnMsg getGrantedMenuByUserId(HttpSession session){
 		ReturnMsg msg = new ReturnMsg(false);
-        ArrayList<Resource> grantedResources = (ArrayList<Resource>)session.getAttribute(CommonConstant.GRANTED_RESOURCES);
+        List grantedResources = (List)session.getAttribute(CommonConstant.GRANTED_RESOURCES);
 
 		if(!CollectionUtil.isEmpty(grantedResources)){
 			Menu menu = new Menu();

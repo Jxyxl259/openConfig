@@ -45,6 +45,14 @@ spring:
   #    additional-paths: src/main/java
   #    #classpath目录下的WEB-INF文件夹内容修改不重启
   #    exclude: WEB-INF/**
+  resources:
+    chain:
+      # 关闭缓存
+      cache: false
+  thymeleaf:
+    # 关闭 thymeleaf 缓存
+    cache: false
+
 
 logging:
   #加载日志文件

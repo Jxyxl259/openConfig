@@ -66,7 +66,7 @@ var commonObj = {
         this.deleteAll();    //批量删除
         this.detailTab();    //详情展示
     },
-  //表格初始化
+    //表格初始化
 	tabInit:function(tabId){
 		if(tabId !=undefined){
 			$("#tableId").DataTable({	
