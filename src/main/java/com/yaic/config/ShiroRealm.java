@@ -15,6 +15,7 @@ import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.authc.SimpleAuthenticationInfo;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
+import org.apache.shiro.cache.Cache;
 import org.apache.shiro.crypto.hash.SimpleHash;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.session.Session;
@@ -127,27 +128,42 @@ public class ShiroRealm extends AuthorizingRealm {
         SimpleAuthenticationInfo authenticationInfo = null;
 		try {
 			userInfo = userService.getUserInfoByUserCode(userCode);
-			  if(userInfo == null){
-		            return null;
-		        }
-		        authenticationInfo = new SimpleAuthenticationInfo(
-		        		userInfo, //用户信息
-		        		userInfo.getPassword(), //密码
-		                ByteSource.Util.bytes(userInfo.getUserCode() + CommonConstant.loginUser.SALT),//salt = usercode + sns
-		                getName()  //realm name
-		        );
-		        
-		        Session session = SecurityUtils.getSubject().getSession();
-		        session.setTimeout(3600000);//一小时,毫秒单位
-		        
-		        session.setAttribute(CommonConstant.loginUser.LOGIN_USER_NAME, userInfo.getUserCode());
-		        session.setAttribute(CommonConstant.loginUser.LOGIN_USER_ID,userInfo.getUserId());
-		        session.setAttribute(CommonConstant.loginUser.LOGIN_USER_INFO,userInfo);
+			if(userInfo == null) return null;
+
+			authenticationInfo = new SimpleAuthenticationInfo(
+					userInfo, //用户信息
+					userInfo.getPassword(), //密码
+					ByteSource.Util.bytes(userInfo.getUserCode() + CommonConstant.loginUser.SALT),//salt = usercode + sns
+					getName()  //realm name
+			);
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
         return authenticationInfo;
     }
+
+
+	/**
+	 * 如果开启认证缓存
+	 * 用户登出之后，务必清理已缓存的认证信息，shiro这里是个坑，存缓存的Key和移除缓存的Key不一致， 必须由我们来重写如下方法
+	 * 不然登出之后再次登录，会受缓存影响，认为是已经认证的
+	 * @param principals
+	 */
+	protected void clearCachedAuthenticationInfo(PrincipalCollection principals) {
+
+		if(!isAuthenticationCachingEnabled() || getAuthenticationCache() == null ){
+			return ;
+		}
+
+		if (!(principals == null || principals.isEmpty())) {
+			Cache<Object, AuthenticationInfo> cache = getAuthenticationCache();
+			String key = ((User)this.getAuthenticationCacheKey(principals)).getUserCode();
+			cache.remove(key);
+		}
+	}
+
+
 
 
 	public static void main(String[] args) {

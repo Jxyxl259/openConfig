@@ -20,6 +20,7 @@ import javax.servlet.http.HttpSession;
 public class APPLoginController {
 	private static final Logger logger = LoggerFactory.getLogger(APPLoginController.class);
 
+
     /**
      * 跳转到后台主面板
      * @param session
@@ -70,10 +71,10 @@ public class APPLoginController {
     public ReturnMsg login(HttpServletRequest request, HttpSession session) throws Exception {
         ReturnMsg result = new ReturnMsg(false);
 
+        User u = (User)session.getAttribute(CommonConstant.loginUser.LOGIN_USER_INFO);
         // 已经登录成功的用户，再次访问登录页面执行登录的处理
         Object accessFlag = request.getAttribute("accessFlag");
         if( accessFlag != null && (boolean)accessFlag){
-            User u = (User)session.getAttribute(CommonConstant.loginUser.LOGIN_USER_INFO);
             result.setSuccess(true);
             result.setData("/index.html?login_username="+ u.getUserCode());
             return result;
@@ -89,7 +90,7 @@ public class APPLoginController {
         } else if(LockedAccountException.class.getName().equals(exceptionClassName)){
             error = "账户被锁定，请联系管理员解锁" ;
         } else if(ExcessiveAttemptsException.class.getName().equals(exceptionClassName)) {
-            error = "登陆错误次数已超过5次,账户被锁定" ; // TODO 待实现
+            error = "登陆错误次数已超过5次,账户被锁定, 请联系管理员解锁" ;
         }
         if(request.getParameter("forceLogout") != null) {
             result.setMessage("您已经被管理员强制退出，请重新登录");

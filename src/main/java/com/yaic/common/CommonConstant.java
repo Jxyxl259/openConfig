@@ -22,4 +22,14 @@ public interface CommonConstant {
 	public static final String BIND_MENU_RESOURCES_ROLE = "login_user";
 
 
+	/** 用户无效标识 */
+	public static final String USER_INVALID = "0";
+
+	/** 用户有效标识 */
+	public static final String USER_VALID = "1";
+
+
+	/** 缓存相关常量 */
+	public static final String PASSWORD_RETRY_CACHE = "passwordRetryCache";
+
 }

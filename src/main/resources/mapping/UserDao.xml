@@ -350,4 +350,10 @@
       FLAG = #{flag,jdbcType=VARCHAR}
     where USER_ID = #{userId,jdbcType=VARCHAR}
   </update>
+
+  <update id="updateUserValidFlagByUserCode" parameterType="com.yaic.system.entity.User">
+    update app_user
+    set VALID_FLAG = #{validFlag,jdbcType=CHAR}
+    where USER_CODE = #{userCode,jdbcType=VARCHAR}
+  </update>
 </mapper>

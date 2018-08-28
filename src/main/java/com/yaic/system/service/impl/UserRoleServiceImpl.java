@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.yaic.system.entity.User;
 import org.apache.commons.lang.StringUtils;
+import org.apache.shiro.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,8 +51,7 @@ public class UserRoleServiceImpl implements UserRoleService {
 				List<UserRole> list = new ArrayList<UserRole>();
 				for (String roleId : resourceArray) {
 					UserRole userRole = new UserRole();
-					// TODO
-					userRole.setCreatedBy("admin");
+					userRole.setCreatedBy(((User)SecurityUtils.getSubject().getPrincipal()).getUserCode());
 					userRole.setCreatedDate(new Date());
 					userRole.setRoleId(roleId);
 					userRole.setUserId(userId);

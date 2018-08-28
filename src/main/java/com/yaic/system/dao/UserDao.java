@@ -29,5 +29,7 @@ public interface UserDao {
      * @return
      */
     User getInfoByUserCode(@Param("userCode")String userCode);
-    
+
+    int updateUserValidFlagByUserCode(User user);
+
 }

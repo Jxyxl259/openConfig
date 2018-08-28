@@ -2,10 +2,13 @@ package com.yaic.system.service.impl;
 
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import com.yaic.common.CommonConstant;
 import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.cache.Cache;
+import org.apache.shiro.cache.CacheManager;
 import org.apache.shiro.crypto.hash.SimpleHash;
 import org.apache.shiro.mgt.SecurityManager;
 import org.apache.shiro.util.ByteSource;
@@ -23,6 +26,7 @@ import com.yaic.system.service.UserService;
 import com.yaic.utils.BeanCopyUtils;
 import com.yaic.utils.UuidUtils;
 
+import static com.yaic.common.CommonConstant.PASSWORD_RETRY_CACHE;
 import static com.yaic.common.CommonConstant.loginUser.ALGORITHM_NAME;
 import static com.yaic.common.CommonConstant.loginUser.HASH_ITERATIONS;
 
@@ -33,6 +37,9 @@ public class UserServiceImpl implements UserService {
 	
 	@Autowired
 	private UserDao userDao;
+
+	@Autowired
+	private CacheManager cacheManager;
 	
 	@Override
 	public List<User> getList(UserDto userDto) {
@@ -50,9 +57,12 @@ public class UserServiceImpl implements UserService {
 			User user = new User();
 			BeanCopyUtils.beanCopy(userDto, user);
 			user.setUpdatedDate(new Date());
-			// TODO 待用户登录功能实现后再完善
-			user.setUpdatedBy("admin");
+			user.setUpdatedBy(((User)SecurityUtils.getSubject().getPrincipal()).getUserCode());
 			userDao.updateByPrimaryKeySelective(user);
+
+			// 解封用户账号锁定状态，重置其密码可重试此数。
+			Cache<String, AtomicInteger> passwordRetryCache = cacheManager.getCache(PASSWORD_RETRY_CACHE);
+			passwordRetryCache.remove(userDto.getUserCode());
 			
 			result.setSuccess(true);
 			result.setMessage(GlobalMessageEnum.SYS_CODE_200.getMsg());

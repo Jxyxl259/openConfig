@@ -4,7 +4,9 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import com.yaic.system.entity.User;
 import org.apache.commons.lang.StringUtils;
+import org.apache.shiro.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -136,8 +138,7 @@ public class ResourceServiceImpl implements ResourceService{
 			Resource resource = new Resource();
 			BeanCopyUtils.beanCopy(resourceDto, resource);
 			resource.setCreatedDate(new Date());
-			// TODO 待用户登录功能实现后再完善
-			resource.setCreatedBy("admin");
+			resource.setCreatedBy(((User)SecurityUtils.getSubject().getPrincipal()).getUserCode());
 			//获取当前节点下最大的子节点的id
 			String maxId = resourceDao.queryMaxIdByParentId(resource.getParentResourceId());
 			String rid = IdGenerateUtils.generateId(resource.getParentResourceId(), maxId);
@@ -178,8 +179,7 @@ public class ResourceServiceImpl implements ResourceService{
 			Resource resource = new Resource();
 			BeanCopyUtils.beanCopy(resourceDto, resource);
 			resource.setUpdatedDate(new Date());
-			// TODO 待用户登录功能实现后再完善
-			resource.setUpdatedBy("admin");
+			resource.setUpdatedBy(((User)SecurityUtils.getSubject().getPrincipal()).getUserCode());
 			resourceDao.updateByPrimaryKeySelective(resource);
 			
 			result.setSuccess(true);

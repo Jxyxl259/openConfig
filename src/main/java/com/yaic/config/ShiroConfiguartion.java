@@ -1,9 +1,18 @@
 package com.yaic.config;
 
 import com.yaic.common.CommonConstant;
+import com.yaic.system.dao.UserDao;
+import com.yaic.system.entity.User;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
+import org.apache.shiro.authc.ExcessiveAttemptsException;
+import org.apache.shiro.authc.credential.CredentialsMatcher;
 import org.apache.shiro.authc.credential.HashedCredentialsMatcher;
+import org.apache.shiro.cache.Cache;
+import org.apache.shiro.cache.CacheManager;
 import org.apache.shiro.mgt.SecurityManager;
+import org.apache.shiro.realm.Realm;
 import org.apache.shiro.session.Session;
 import org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
@@ -13,10 +22,13 @@ import org.apache.shiro.web.filter.authc.FormAuthenticationFilter;
 import org.apache.shiro.web.filter.authc.LogoutFilter;
 import org.apache.shiro.web.filter.authz.AuthorizationFilter;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
+import org.apache.shiro.web.session.mgt.ServletContainerSessionManager;
 import org.apache.shiro.web.util.SavedRequest;
 import org.apache.shiro.web.util.WebUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.web.servlet.handler.SimpleMappingExceptionResolver;
 
 import javax.servlet.Filter;
@@ -26,9 +38,14 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.atomic.AtomicInteger;
 
+import static com.yaic.common.CommonConstant.PASSWORD_RETRY_CACHE;
 import static com.yaic.common.CommonConstant.BIND_MENU_RESOURCES;
 import static com.yaic.common.CommonConstant.BIND_MENU_RESOURCES_ROLE;
+import static com.yaic.common.CommonConstant.USER_INVALID;
+
+
 
 /**
  * 权限配置类
@@ -39,10 +56,13 @@ import static com.yaic.common.CommonConstant.BIND_MENU_RESOURCES_ROLE;
  * @date 2018年6月17日 下午9:27:03
  *
  */
+@Order(3)
 @Configuration
 public class ShiroConfiguartion {
 
-	
+	@Autowired
+	private UserDao userDao;
+
 	/** 
 	* @Title: shirFilter 
 	* @Description: 权限拦截器
@@ -112,6 +132,15 @@ public class ShiroConfiguartion {
 		shiroFilterFactoryBean.setFilterChainDefinitionMap(filterChainDefinitionMap);
 	}
 
+
+	@Bean
+	@Autowired
+	public CacheManager springCacheManagerWrapper(org.springframework.cache.ehcache.EhCacheCacheManager springCacheCacheManager){
+		SpringCacheManagerWrapper springCacheWrapper = new SpringCacheManagerWrapper();
+		springCacheWrapper.setCacheManager(springCacheCacheManager);
+		return springCacheWrapper;
+	}
+
 	/** 
 	* @Title: hashedCredentialsMatcher 
 	* @Description: 凭证匹配器
@@ -120,25 +149,35 @@ public class ShiroConfiguartion {
 	* @throws 
 	*/
 	@Bean
-	public HashedCredentialsMatcher hashedCredentialsMatcher() {
-		HashedCredentialsMatcher hashedCredentialsMatcher = new HashedCredentialsMatcher();
-		hashedCredentialsMatcher.setHashAlgorithmName(CommonConstant.loginUser.ALGORITHM_NAME);// 散列算法:这里使用MD5算法;
-		hashedCredentialsMatcher.setHashIterations(CommonConstant.loginUser.HASH_ITERATIONS);// 散列的次数，比如散列两次，相当于 md5(md5(""));
-		hashedCredentialsMatcher.setStoredCredentialsHexEncoded(true);
-		return hashedCredentialsMatcher;
+	@Autowired
+	public HashedCredentialsMatcher hashedCredentialsMatcher(org.apache.shiro.cache.CacheManager CacheManager) {
+		RetryLimitHashedCredentialsMatcher credentialsMatcher = new RetryLimitHashedCredentialsMatcher(CacheManager);
+		credentialsMatcher.setHashAlgorithmName(CommonConstant.loginUser.ALGORITHM_NAME);// 散列算法:这里使用MD5算法;
+		credentialsMatcher.setHashIterations(CommonConstant.loginUser.HASH_ITERATIONS);// 散列的次数，比如散列两次，相当于 md5(md5(""));
+		credentialsMatcher.setStoredCredentialsHexEncoded(true);
+		return credentialsMatcher;
 	}
 
 	@Bean
-	public ShiroRealm myShiroRealm() {
+	@Autowired
+	public ShiroRealm myShiroRealm(CredentialsMatcher credentialsMatcher) {
 		ShiroRealm myShiroRealm = new ShiroRealm();
-		myShiroRealm.setCredentialsMatcher(hashedCredentialsMatcher());
+		myShiroRealm.setCredentialsMatcher(credentialsMatcher);
+		myShiroRealm.setCachingEnabled(true);
+		myShiroRealm.setAuthenticationCachingEnabled(true);
+		myShiroRealm.setAuthorizationCachingEnabled(true);
+		myShiroRealm.setAuthenticationCacheName("authenticationCache");
+		myShiroRealm.setAuthorizationCacheName("authorizationCache");
 		return myShiroRealm;
 	}
 
 	@Bean
-	public SecurityManager securityManager() {
+	@Autowired
+	public SecurityManager securityManager(Realm myShiroRealm, org.apache.shiro.cache.CacheManager springCacheManagerWrapper) {
 		DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager();
-		securityManager.setRealm(myShiroRealm());
+		securityManager.setRealm(myShiroRealm);
+		securityManager.setCacheManager(springCacheManagerWrapper);
+		securityManager.setSessionManager(new ServletContainerSessionManager());
 		return securityManager;
 	}
 
@@ -259,7 +298,6 @@ public class ShiroConfiguartion {
 	}
 
 
-
 	/**
 	 * @ClassName BindGrantedMenuResourcesFilter
 	 * @Description 授权给用户左侧菜单资源
@@ -278,4 +316,51 @@ public class ShiroConfiguartion {
 		}
 	}
 
+
+	/**
+	 * 密码重试机制，
+	 * 5次机会，超过5次，账号标识为无效
+	 */
+	class RetryLimitHashedCredentialsMatcher extends HashedCredentialsMatcher {
+
+		private Cache<String, AtomicInteger> passwordRetryCache;
+
+		public RetryLimitHashedCredentialsMatcher(CacheManager cacheManager) {
+			passwordRetryCache = cacheManager.getCache(PASSWORD_RETRY_CACHE);
+		}
+
+		@Override
+		public boolean doCredentialsMatch(AuthenticationToken token, AuthenticationInfo info) {
+			String username = (String)token.getPrincipal();
+
+			// 密码尝试次数 +1
+			AtomicInteger retryCount = passwordRetryCache.get(username);
+			if(retryCount == null) {
+				retryCount = new AtomicInteger(0);
+				passwordRetryCache.put(username, retryCount);
+			}
+
+			// 密码重试次数 超过5次，锁定用户，抛出异常
+			if(retryCount.incrementAndGet() > 5) {
+				User u = new User();
+				u.setUserCode(username);
+				u.setValidFlag(USER_INVALID);
+				userDao.updateUserValidFlagByUserCode(u);
+				throw new ExcessiveAttemptsException();
+			}
+
+			boolean matches = super.doCredentialsMatch(token, info);
+
+			// 如果密码匹配，清空重试次数
+			if(matches) {
+				passwordRetryCache.remove(username);
+				Session session = SecurityUtils.getSubject().getSession();
+				session.setTimeout(3600000);// session过期时间 一小时, 单位：毫秒
+				session.setAttribute(CommonConstant.loginUser.LOGIN_USER_INFO, info.getPrincipals().getPrimaryPrincipal());
+			}
+			return matches;
+		}
+	}
+
 }
+

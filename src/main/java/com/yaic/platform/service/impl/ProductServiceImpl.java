@@ -4,8 +4,10 @@ import java.io.File;
 import java.util.Date;
 import java.util.List;
 
+import com.yaic.system.entity.User;
 import org.apache.commons.beanutils.ConvertUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.shiro.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -137,8 +139,7 @@ public class ProductServiceImpl implements ProductService {
 			Product product = new Product();
 			BeanCopyUtils.beanCopy(productDto, product);
 			product.setCreatedDate(new Date());
-            // TODO 待用户登录功能实现后再完善
-            product.setCreatedUser("admin");
+            product.setCreatedUser(((User)SecurityUtils.getSubject().getPrincipal()).getUserCode());
 			product.setProductImg(fileName);
 			
 			affectRows = productDao.insertSelective(product);

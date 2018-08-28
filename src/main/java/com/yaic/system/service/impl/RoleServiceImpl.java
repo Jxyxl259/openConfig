@@ -3,7 +3,9 @@ package com.yaic.system.service.impl;
 import java.util.Date;
 import java.util.List;
 
+import com.yaic.system.entity.User;
 import org.apache.commons.lang.StringUtils;
+import org.apache.shiro.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,8 +50,7 @@ public class RoleServiceImpl implements RoleService {
 			Role role = new Role();
 			BeanCopyUtils.beanCopy(roleDto, role);
 			role.setUpdatedDate(new Date());
-			// TODO 待用户登录功能实现后再完善
-			role.setUpdatedBy("admin");
+			role.setUpdatedBy(((User)SecurityUtils.getSubject().getPrincipal()).getUserCode());
 			roleDao.updateByPrimaryKeySelective(role);
 			
 			result.setSuccess(true);
@@ -96,8 +97,7 @@ public class RoleServiceImpl implements RoleService {
 			Role role = new Role();
 			BeanCopyUtils.beanCopy(roleDto, role);
 			role.setCreatedDate(new Date());
-			// TODO 待用户登录功能实现后再完善
-			role.setCreatedBy("admin");
+			role.setCreatedBy(((User)SecurityUtils.getSubject().getPrincipal()).getUserCode());
 			
 			String maxId = roleDao.getMaxRoleId();
 			String strRoleID = StringUtils.leftPad((Integer.parseInt(maxId)+1)+"", 4, "0");

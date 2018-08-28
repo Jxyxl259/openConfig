@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.yaic.system.entity.User;
 import org.apache.commons.lang.StringUtils;
+import org.apache.shiro.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,8 +79,7 @@ public class RoleResourceServiceImpl implements RoleResourceService {
 				List<RoleResource> list = new ArrayList<RoleResource>();
 				for (String resId : resourceArray) {
 					RoleResource roleRes = new RoleResource();
-					// TODO
-					roleRes.setCreatedBy("admin");
+					roleRes.setCreatedBy(((User)SecurityUtils.getSubject().getPrincipal()).getUserCode());
 					roleRes.setCreatedDate(new Date());
 					roleRes.setRoleId(roleId);
 					roleRes.setResourceId(resId);
