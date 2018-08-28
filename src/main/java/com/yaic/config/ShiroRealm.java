@@ -136,7 +136,24 @@ public class ShiroRealm extends AuthorizingRealm {
 					ByteSource.Util.bytes(userInfo.getUserCode() + CommonConstant.loginUser.SALT),//salt = usercode + sns
 					getName()  //realm name
 			);
-
+			/**
+			 * 如果加入缓存机制, 尽量不要在这里往session中设置值，
+			 * 然后在后面的逻辑中用此处设置的值， 因为缓存会导致对于每个用户来讲，该方法只执行一次（之后走缓存）
+			 * 并且用户每次logout，shiro是直接调用当前 httpSession对象的invalidate()方法，
+			 * 也即用户登出即销毁当前浏览器回话对象，
+			 * 会出现这种情况：
+			 * 		用户A登录， 密码输入失败，A的 session信息被写入，info信息被缓存，登录失败，
+			 * 		然后用户B登录， 输入密码正确，B的 session信息被写入， info信息被缓存， 登录成功，然后B登出
+			 * 		此时 session被销毁，用户A再使用正确的密码登录， 重新创建session对象
+			 *		从缓存中获取到 info信息，与token匹配成功
+			 * 		重定向到登录成功的URL (这里是/home)，想拿出第一次登录失败时的 session信息
+			 * 		但是由于 session被是销毁之后又重新创建的对象，
+			 * 		A的 session信息已不复存在，/home映射Handler方法中通过 HttpSession拿不到当初在本方法中设置的值
+			 * 		于是报出来空指针异常。
+			 */
+//			Session session = SecurityUtils.getSubject().getSession();
+//			session.setTimeout(3600000);// session过期时间 一小时, 单位：毫秒
+//			session.setAttribute(CommonConstant.loginUser.LOGIN_USER_INFO, userInfo);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
